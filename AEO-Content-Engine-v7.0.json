@@ -642,7 +642,7 @@
         "subject": "={{ $json.subject }}",
         "html": "={{ $json.html }}",
         "options": {
-          "attachments": "attachment,attachment_html"
+          "attachments": "={{ Object.keys($binary || {}).join(\",\") }}"
         }
       },
       "id": "ed7135da-c036-4b6b-879c-c3937e4d5172",
