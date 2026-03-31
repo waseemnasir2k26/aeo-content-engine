@@ -1,0 +1,1025 @@
+{
+  "name": "AEO Content Engine v7.0 - 31st March 2026 - Two-Model Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# AEO Content Engine v5.0\n\n**Two AI Models Working Together:**\n- **GPT-4.1** → Keyword strategy + Content writing + AEO editing\n- **Gemini 2.5 Flash** → Deep research & trend analysis\n\n**Keyword Research (FREE):**\n- Google Autocomplete API (unlimited, no key)\n- Serper.dev (2,500 free searches, no credit card)\n\n**Pipeline:**\n1. Google Autocomplete + Serper.dev → GPT-4.1 keyword strategy\n2. RSS feeds → Gemini deep research\n3. GPT writes article → GPT-4.1 optimizes for AEO\n4. GPT writes newsletter + video scripts\n5. Send 3 SEPARATE branded emails (Article, Newsletter, Scripts)\n\n**3 Credentials Needed:**\n1. Serper.dev API Key (serper.dev — FREE 2,500 searches)\n2. OpenAI API (platform.openai.com)\n3. Google Gemini API (ai.google.dev)\n4. SMTP (Gmail App Password)\n\n**Customize per client:**\n- Client Configuration node (all settings + branding)\n- RSS Feed Sources node (swap URLs)\n- Duplicate workflow per client",
+        "height": 780,
+        "width": 560,
+        "color": 5
+      },
+      "id": "202471b1-9899-4609-8b49-7c7dcd488964",
+      "name": "Sticky Note - Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2224,
+        -384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# SETUP GUIDE\n\n## Step 1: Serper.dev (FREE — 2,500 searches)\n1. Go to serper.dev → Sign up (no credit card)\n2. Copy your API key from the dashboard\n3. In n8n: Credentials → New → Header Auth\n4. Name: X-API-KEY\n5. Value: paste your Serper API key\n6. Save as \"Serper.dev API Key\"\n7. Update the 'Serper - SERP + PAA' node credential\n\n## Step 2: OpenAI API (GPT-4.1)\n1. Go to platform.openai.com → API Keys\n2. Create a new API key\n3. In n8n: Credentials → New → OpenAI API\n4. Paste your API key → Save\n5. Update all five GPT nodes\n\n## Step 3: Google Gemini API\n1. Go to ai.google.dev → Get API Key\n2. Create key in Google Cloud project\n3. In n8n: Credentials → New → Google PaLM API\n4. Paste your API key → Save\n5. Update both Gemini nodes\n\n## Step 4: SMTP (Gmail)\n1. Enable 2FA on your Google Account\n2. Google Account → Security → App Passwords\n3. Generate an App Password for 'Mail'\n4. In n8n: Credentials → New → SMTP\n5. Host: smtp.gmail.com | Port: 465 | SSL: Yes\n6. User: your@gmail.com | Pass: app password\n\n## Step 5: Client Configuration\n- Open the 'Client Configuration' node\n- Update ALL fields for your client\n- Update 'RSS Feed Sources' with client's feeds\n\n## Step 6: Test & Activate\n- Click 'Test Workflow' to run once\n- Check email output\n- If good → toggle Active",
+        "height": 1296,
+        "width": 396,
+        "color": 7
+      },
+      "id": "95239711-b21f-4e18-aa54-386418699a3e",
+      "name": "Sticky Note - Setup Guide",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2864,
+        -880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# UPGRADE TO PAID APIs\n\nThis workflow uses FREE APIs by default.\nWhen ready, you can upgrade for richer data:\n\n## Option A: DataForSEO ($50 deposit, pay-per-query)\nReplaces: Autocomplete + Serper nodes\nGives you: Exact search volume, keyword difficulty,\nCPC, competition scores, AI Overview detection\n- Sign up: dataforseo.com\n- Auth: HTTP Basic Auth (email + API password)\n- Replace the 3 keyword nodes with:\n  POST dataforseo.com/v3/dataforseo_labs/google/\n  related_keywords/live\n  POST .../keyword_suggestions/live\n  POST .../serp/google/organic/live/regular\n- Cost: ~$0.002/query live, ~$0.0006 standard\n\n## Option B: SerpAPI ($75/mo for 5,000 searches)\nReplaces: Serper node\nGives you: Google Trends data + SERP\n- n8n has a built-in SerpAPI node\n- engine=google_trends for trending topics\n- engine=google for SERP + PAA\n\n## Option C: SEMrush ($500/mo Business plan)\nReplaces: All keyword nodes\nGives you: Industry-leading keyword database\n- Use HTTP Request with SEMrush API\n- Best for agencies with 10+ clients\n\n## Option D: Ahrefs (via RapidAPI)\nReplaces: Keyword Suggestions node\nGives you: Keyword explorer + backlink data\n- Available on RapidAPI marketplace\n- Use HTTP Request node\n\n## Google Search Console (FREE, own sites only)\nADD alongside existing nodes (don't replace):\n- n8n has built-in Google Search Console node\n- Shows real clicks, impressions, CTR, position\n- Great for tracking AEO performance over time\n- Requires site verification in Search Console",
+        "height": 1328,
+        "width": 380,
+        "color": 4
+      },
+      "id": "af31fefe-88b1-4bbb-a591-7d69bec20323",
+      "name": "Sticky Note - API Upgrade Guide",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3328,
+        -912
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Phase 1: Keyword Research (FREE)\nGoogle Autocomplete (no key) + Serper.dev (2,500 free) → GPT-4.1",
+        "height": 200,
+        "width": 1820,
+        "color": 4
+      },
+      "id": "18bf6e10-e2da-4d58-a0fc-3509c2130fc4",
+      "name": "Sticky Note - Phase 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2976,
+        512
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Phase 2: RSS + Gemini Deep Research\nFetch industry feeds → Gemini 2.5 Flash analysis",
+        "height": 320,
+        "width": 1540,
+        "color": 6
+      },
+      "id": "dcd7d2cb-fa11-47b6-8178-8db7fe56a798",
+      "name": "Sticky Note - Phase 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2224,
+        1040
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Phase 3: Content Generation\nGPT-4.1 writes → GPT-4.1 AEO edits article",
+        "height": 200,
+        "width": 2100,
+        "color": 3
+      },
+      "id": "362c451c-91ad-4e13-a57e-b94214d90c28",
+      "name": "Sticky Note - Phase 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2224,
+        1536
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Phase 4: Separate Email Delivery\n4 branded emails sent separately:\n1. AEO Article (full content + HTML/DOCX attachments for CMS)\n2. Newsletter Digest (categorized stories)\n3. Video Scripts (short + long form)\n4. Instructions (step-by-step publishing guide)",
+        "height": 320,
+        "width": 780,
+        "color": 2
+      },
+      "id": "934a5987-87f6-4a07-a97d-7ac1d51eafe3",
+      "name": "Sticky Note - Phase 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2224,
+        2032
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "d8e1453e-513c-469c-9f91-4047db9d1036",
+      "name": "Weekly Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        2320,
+        656
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"industry\": \"Your Industry\",\n  \"targetAudience\": \"Your Target Audience\",\n  \"brandName\": \"Your Brand Weekly Digest\",\n  \"tone\": \"Sharp, specific, no-nonsense. Write like a senior tech journalist at The Information or Ars Technica - not a corporate blog. Lead with concrete facts, name specific companies and products, cite real numbers. Zero corporate buzzwords. If you catch yourself writing leverage, synergy, cutting-edge, innovative, game-changing, revolutionize, or harness the power of - delete the sentence.\",\n  \"keywords\": \"keyword1, keyword2, keyword3, keyword4, keyword5\",\n  \"recipientEmail\": \"your-client@example.com\",\n  \"senderEmail\": \"your-sender@example.com\",\n  \"avoidTopics\": \"politics, religion, controversial opinions\",\n  \"logoUrl\": \"https://your-logo-url.com/logo.png\",\n  \"brandColor\": \"#6366f1\",\n  \"brandColor_HELP\": \"Your main brand color. Used for links, buttons, and email header. Just enter the ONE color that represents the brand.\",\n  \"headerDarkColor\": \"#1a1a2e\",\n  \"headerDarkColor_HELP\": \"Dark background behind the logo in the email header. Leave as #1a1a2e (dark navy) if unsure. Works with any brand color.\",\n  \"highlightColor\": \"#f59e0b\",\n  \"highlightColor_HELP\": \"Color for category tags and small accents. Can be same as brandColor, or a complementary tone like gold or orange.\",\n  \"fontFamily\": \"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif\",\n  \"websiteUrl\": \"https://your-website.com/\",\n  \"articleBaseUrl\": \"https://your-website.com/blog/\"\n}",
+        "options": {}
+      },
+      "id": "13df0c0e-db29-45a0-801c-a546726690b2",
+      "name": "Client Configuration",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2624,
+        656
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst config = $input.first().json;\nconst keywords = config.keywords.split(',').map(k => k.trim()).filter(k => k.length > 0);\n\nconst staticData = $getWorkflowStaticData('global');\nconst history = staticData.contentHistory || [];\n\nconst industry = (config.industry || '').trim();\nconst audience = (config.targetAudience || '').trim();\n\n// Build keyword pool — with 12 seeds we already have good variety\nconst pool = [];\nkeywords.forEach(k => pool.push(k));\nif (industry) {\n  pool.push(industry + ' trends');\n  pool.push(industry + ' challenges');\n  pool.push(industry + ' automation');\n  pool.push(industry + ' cost reduction');\n}\nif (audience) {\n  pool.push(audience + ' priorities');\n  keywords.slice(0, 4).forEach(k => pool.push(audience + ' ' + k));\n}\nkeywords.forEach(k => {\n  pool.push(k + ' trends ' + new Date().getFullYear());\n  pool.push(k + ' ROI');\n});\n\nconst seen = new Set();\nconst uniquePool = pool.filter(k => {\n  const lower = k.toLowerCase();\n  if (seen.has(lower)) return false;\n  seen.add(lower);\n  return true;\n});\n\n// Rotate keyword — avoid last 8 runs\nconst recentPrimaries = history.slice(-8).flatMap(h => [\n  (h.primaryKeyword || '').toLowerCase(),\n  (h.queryKeyword || '').toLowerCase()\n]).filter(Boolean);\nlet primary = uniquePool.find(k => !recentPrimaries.includes(k.toLowerCase()));\nif (!primary) primary = uniquePool[history.length % uniquePool.length];\n\n// Rotate question prefixes\nconst allPrefixes = ['what is', 'how to', 'why', 'best', 'top', 'latest', 'future of', 'how does', 'when should', 'cost of', 'risks of', 'alternatives to'];\nconst startIdx = history.length % allPrefixes.length;\nconst questionPrefixes = [];\nfor (let i = 0; i < 4; i++) {\n  questionPrefixes.push(allPrefixes[(startIdx + i) % allPrefixes.length]);\n}\nconst questionQueries = questionPrefixes.map(p => p + ' ' + primary);\n\n// ARTICLE STRUCTURE ROTATION — 3 different formats so articles don't all look the same\nconst structures = [\n  {\n    name: 'deep-dive',\n    description: 'Deep-dive analysis: Start with a bold claim backed by data. Use numbered sections with specific examples. End with a contrarian take.',\n    format: 'numbered-analysis'\n  },\n  {\n    name: 'problem-solution',\n    description: 'Problem-Solution: Open with a real pain point (quote a CIO or cite a survey). Walk through the problem with specifics. Present 2-3 solutions with pros/cons. End with a decision framework.',\n    format: 'problem-solution'\n  },\n  {\n    name: 'case-study',\n    description: 'Case Study / News Analysis: Lead with a specific company or event. Analyze what happened, why it matters, and what CIOs should do about it. Include a timeline or comparison table.',\n    format: 'news-analysis'\n  }\n];\nconst structureIndex = history.length % structures.length;\nconst articleStructure = structures[structureIndex];\n\nreturn [{\n  json: {\n    ...config,\n    keywordList: keywords,\n    primaryKeyword: primary,\n    questionQueries: questionQueries,\n    keywordPool: uniquePool,\n    runNumber: history.length + 1,\n    locationCode: 2840,\n    languageCode: 'en',\n    articleStructure: articleStructure\n  }\n}];\n"
+      },
+      "id": "123efb61-a23a-403d-84be-f2bfc114938c",
+      "name": "Prepare Keywords",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3008,
+        656
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "url": "=https://suggestqueries.google.com/complete/search?client=chrome&q={{ $('Prepare Keywords').first().json.primaryKeyword.split(' ').join('+') }}&hl=en&gl=us",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "bc3d8ee6-d0c4-45c2-beeb-281a1e7848bb",
+      "name": "Autocomplete - Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3312,
+        656
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://suggestqueries.google.com/complete/search?client=chrome&q={{ $('Prepare Keywords').first().json.questionQueries[0].split(' ').join('+') }}&hl=en&gl=us",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "ea60a648-78db-42dd-a13f-49aa1bd1c03a",
+      "name": "Autocomplete - Questions",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3616,
+        656
+      ],
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"q\": \"{{ $('Prepare Keywords').first().json.primaryKeyword }}\", \"gl\": \"us\", \"hl\": \"en\", \"num\": 30}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "2a1c4f2e-f0d8-4d9a-b77a-4806c1e246a4",
+      "name": "Serper - SERP + PAA",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3904,
+        656
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Header Auth account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge Google Autocomplete + Serper.dev results\nlet autocompleteSuggestions = [];\nlet questionSuggestions = [];\nlet serpData = {};\nlet peopleAlsoAsk = [];\nlet relatedSearches = [];\nlet featuredSnippet = null;\n\n// Parse Autocomplete - Keywords\ntry {\n  const auto = $('Autocomplete - Keywords').first().json;\n  if (Array.isArray(auto) && auto[1]) {\n    autocompleteSuggestions = auto[1].map(s => ({ keyword: s, source: 'autocomplete' }));\n  } else if (auto.data || auto.suggestions) {\n    autocompleteSuggestions = (auto.data || auto.suggestions || []).map(s => ({ keyword: typeof s === 'string' ? s : s.value || s.keyword || '', source: 'autocomplete' }));\n  }\n} catch(e) {}\n\n// Parse Autocomplete - Questions\ntry {\n  const quest = $('Autocomplete - Questions').first().json;\n  if (Array.isArray(quest) && quest[1]) {\n    questionSuggestions = quest[1].map(s => ({ question: s, source: 'autocomplete_questions' }));\n  } else if (quest.data || quest.suggestions) {\n    questionSuggestions = (quest.data || quest.suggestions || []).map(s => ({ question: typeof s === 'string' ? s : s.value || s.keyword || '', source: 'autocomplete_questions' }));\n  }\n} catch(e) {}\n\n// Parse Serper.dev SERP results\ntry {\n  const serp = $('Serper - SERP + PAA').first().json;\n  \n  // Organic results\n  serpData = {\n    totalResults: serp.organic ? serp.organic.length : 0,\n    topResults: (serp.organic || []).slice(0, 10).map(r => ({\n      title: r.title, url: r.link, description: r.snippet, position: r.position\n    }))\n  };\n  \n  // People Also Ask (GOLD for AEO)\n  peopleAlsoAsk = (serp.peopleAlsoAsk || []).map(p => ({\n    question: p.question,\n    snippet: p.snippet || '',\n    title: p.title || '',\n    link: p.link || ''\n  }));\n  \n  // Related Searches\n  relatedSearches = (serp.relatedSearches || []).map(r => ({\n    query: r.query\n  }));\n  \n  // Featured Snippet\n  if (serp.answerBox) {\n    featuredSnippet = {\n      type: serp.answerBox.type || 'unknown',\n      title: serp.answerBox.title || '',\n      answer: serp.answerBox.answer || serp.answerBox.snippet || '',\n      source: serp.answerBox.link || ''\n    };\n  }\n  \n  // Knowledge Graph\n  if (serp.knowledgeGraph) {\n    serpData.knowledgeGraph = {\n      title: serp.knowledgeGraph.title || '',\n      type: serp.knowledgeGraph.type || '',\n      description: serp.knowledgeGraph.description || ''\n    };\n  }\n} catch(e) {}\n\nconst config = $('Client Configuration').first().json;\n\n// Load content history for deduplication across runs\nconst staticData = $getWorkflowStaticData('global');\nconst contentHistory = staticData.contentHistory || [];\n\nreturn [{ json: {\n  clientConfig: config,\n  keywordData: {\n    autocompleteSuggestions,\n    questionSuggestions,\n    relatedSearches,\n    serpData,\n    peopleAlsoAsk,\n    featuredSnippet,\n    totalDataPoints: autocompleteSuggestions.length + questionSuggestions.length + peopleAlsoAsk.length + relatedSearches.length\n  },\n  contentHistory: {\n    usedKeywords: contentHistory.map(h => h.primaryKeyword).filter(Boolean),\n    usedAngles: contentHistory.map(h => h.articleAngle).filter(Boolean),\n    usedTitles: contentHistory.map(h => h.articleTitle).filter(Boolean),\n    usedTopStories: contentHistory.map(h => h.topStoryTitle).filter(Boolean),\n    totalPreviousRuns: contentHistory.length\n  }\n}}];\n"
+      },
+      "id": "aabe7356-6c96-4ced-b75b-720d22f6ade9",
+      "name": "Merge Keyword Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        4208,
+        656
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=# KEYWORD RESEARCH ANALYSIS\n\n## Client\n- Industry: {{ $json.clientConfig.industry }}\n- Audience: {{ $json.clientConfig.targetAudience }}\n- Brand: {{ $json.clientConfig.brandName }}\n- Tone: {{ $json.clientConfig.tone }}\n- Seeds: {{ $json.clientConfig.keywords }}\n- Avoid: {{ $json.clientConfig.avoidTopics }}\n\n## Google Autocomplete Suggestions (Real User Searches)\n{{ JSON.stringify($json.keywordData.autocompleteSuggestions, null, 1) }}\n\n## Question-Based Searches (AEO Gold)\n{{ JSON.stringify($json.keywordData.questionSuggestions, null, 1) }}\n\n## People Also Ask (from Google SERP)\n{{ JSON.stringify($json.keywordData.peopleAlsoAsk, null, 1) }}\n\n## Related Searches\n{{ JSON.stringify($json.keywordData.relatedSearches, null, 1) }}\n\n## Current SERP Landscape\n{{ JSON.stringify($json.keywordData.serpData, null, 1) }}\n\n## Featured Snippet\n{{ JSON.stringify($json.keywordData.featuredSnippet) }}\n\n## TODAY'S DATE: {{ new Date().toISOString().split('T')[0] }}\n\n## PREVIOUSLY USED — DO NOT REPEAT THESE\n- Keywords already used in past articles: {{ JSON.stringify($json.contentHistory ? $json.contentHistory.usedKeywords : []) }}\n- Angles already covered: {{ JSON.stringify($json.contentHistory ? $json.contentHistory.usedAngles : []) }}\n- Previous article titles: {{ JSON.stringify($json.contentHistory ? $json.contentHistory.usedTitles : []) }}\n\nYou MUST pick a DIFFERENT primary keyword and a COMPLETELY FRESH angle not listed above. If obvious keywords have been used, find creative long-tail variations, emerging sub-topics, or combine keywords in new ways. NEVER repeat a previously used keyword as the primary.\n\n## TASK\nAnalyze all keyword and SERP data. We are in 2026 — focus on current trends only. NEVER write 2024 or 2025 dates — ALL content must reference 2026. The autocomplete data shows real trending searches. The PAA data shows exact questions AI engines surface. Use these to create a laser-focused content strategy.\n\nReturn ONLY valid JSON:\n\n{\"keywordStrategy\":{\"primaryKeyword\":\"the single best keyword from the data\",\"secondaryKeywords\":[\"5-8 supporting keywords from autocomplete + related searches\"],\"longTailKeywords\":[\"5-10 long-tail from question suggestions\"],\"paaQuestions\":[\"top 5 People Also Ask questions — these are critical for AEO\"]},\"contentBrief\":{\"recommendedTitle\":\"SEO title 60 chars max incorporating primary keyword\",\"metaDescription\":\"155 chars max\",\"articleAngle\":\"specific hook based on trending autocomplete data\",\"headingStructure\":[\"H2: Section using PAA question format\",\"H3: Sub\"],\"faqQuestions\":[\"3-5 FAQ directly from PAA data\"],\"keyTakeaways\":[\"3-5 bullets\"],\"aeoOptimization\":{\"directAnswerOpening\":\"2 sentence direct answer matching the top PAA question\",\"featuredSnippetTarget\":\"paragraph|list|table — based on current featured snippet format\",\"aiOverviewStrategy\":\"strategy based on current SERP landscape\"}},\"competitorInsights\":{\"topCompetitorUrls\":[\"top 3 ranking URLs from SERP data\"],\"contentGaps\":[\"2-3 gaps competitors miss based on PAA + autocomplete\"],\"differentiator\":\"our edge\"}}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "instructions": "You are an elite SEO/AEO strategist. You analyze Google Autocomplete trends, SERP data, People Also Ask questions, and related searches to create precise content briefs optimized for AI answer engines (ChatGPT, Google AI Overviews, Perplexity). PAA questions are your most valuable signal — they show exactly what AI engines surface. Return valid JSON only.",
+          "maxTokens": 4096,
+          "temperature": 0.6
+        }
+      },
+      "id": "999eaf55-f84b-4e75-afbe-d4e7d4983009",
+      "name": "GPT-4.1 - Keyword Strategy",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        4512,
+        656
+      ],
+      "typeVersion": 2.1,
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\n\n// Robust text extraction — handles OpenAI Responses API, simplified, and raw formats\nfunction extractText(r) {\n  if (typeof r.text === 'string' && r.text.length > 0) return r.text;\n  if (typeof r.message === 'string' && r.message.length > 0) return r.message;\n  if (r.output && Array.isArray(r.output)) {\n    return r.output.map(o => {\n      if (typeof o.content === 'string') return o.content;\n      if (Array.isArray(o.content)) return o.content.map(c => c.text || '').join('');\n      return o.text || '';\n    }).join('');\n  }\n  if (r.content && Array.isArray(r.content)) return r.content.map(c => c.text || '').join('');\n  if (typeof r.output === 'string') return r.output;\n  return '';\n}\n\nlet text = extractText(response);\ntext = text.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\ntry {\n  const parsed = JSON.parse(text);\n  return [{ json: parsed }];\n} catch(e) {\n  const config = $('Client Configuration').first().json;\n  const kws = config.keywords.split(',').map(k => k.trim());\n  return [{ json: {\n    keywordStrategy: { primaryKeyword: kws[0], secondaryKeywords: kws.slice(1, 6), longTailKeywords: [], paaQuestions: [] },\n    contentBrief: { recommendedTitle: config.industry + ' Update', metaDescription: '', articleAngle: 'Latest trends', headingStructure: [], faqQuestions: [], keyTakeaways: [], aeoOptimization: { directAnswerOpening: '', featuredSnippetTarget: 'paragraph', aiOverviewStrategy: '' } },\n    competitorInsights: { topCompetitorUrls: [], contentGaps: [], differentiator: '' }\n  }}];\n}\n"
+      },
+      "id": "271bbe23-5742-4a43-9956-35bc65d30473",
+      "name": "Parse Strategy",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        4816,
+        656
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"urls\": [\n    \"https://example.com/industry-feed-1/rss/\",\n    \"https://example.com/industry-feed-2/rss.xml\",\n    \"https://example.com/industry-feed-3/feed/\",\n    \"https://example.com/industry-feed-4/feed\"\n  ]\n}",
+        "options": {}
+      },
+      "id": "fbb7226f-2017-4d9e-8b6c-b550993ef9b3",
+      "name": "RSS Feed Sources",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2320,
+        1200
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "urls",
+        "options": {}
+      },
+      "id": "d896766e-9660-424b-b033-94672e6f6609",
+      "name": "Split URLs",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        2624,
+        1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "dbc775ec-85d0-40d7-ac85-869e08f75540",
+      "name": "Loop Over Feeds",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        2928,
+        1200
+      ],
+      "typeVersion": 3,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.urls }}",
+        "options": {}
+      },
+      "id": "aa6e3c60-bd01-4326-80a9-23a2c362c804",
+      "name": "Read RSS Feed",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        3168,
+        1360
+      ],
+      "typeVersion": 1.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "0ed2e18b-085e-4d16-b451-4d854897ec71",
+      "name": "Convert to CSV",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        3232,
+        1200
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "inputType": "binary"
+      },
+      "id": "7d5b0863-1ee8-4875-b3ce-add69e04e7f9",
+      "name": "Upload to Gemini",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "position": [
+        3536,
+        1200
+      ],
+      "typeVersion": 1.1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "id"
+        },
+        "text": "=# DEEP RESEARCH & TREND ANALYSIS\n\n## TODAY'S DATE: {{ new Date().toISOString().split('T')[0] }}\n\nYou are an AI research analyst. Analyze the attached RSS feed CSV.\n\nCRITICAL DATE RULES:\n- We are in 2026. Today's date is shown above.\n- ONLY include stories from 2026. SKIP anything dated 2024 or 2025.\n- Check publication dates in the RSS data. DISCARD items published before January 2026.\n- All dates in your output MUST be from 2026.\n- If a story has no date, only include it if the content clearly references 2026 events.\n\n## Client Context\n- Industry: {{ $('Client Configuration').first().json.industry }}\n- Audience: {{ $('Client Configuration').first().json.targetAudience }}\n- Keywords: {{ $('Client Configuration').first().json.keywords }}\n- Avoid: {{ $('Client Configuration').first().json.avoidTopics }}\n\n## Keyword Strategy\n- Primary: {{ $('Parse Strategy').first().json.keywordStrategy.primaryKeyword }}\n- Secondary: {{ JSON.stringify($('Parse Strategy').first().json.keywordStrategy.secondaryKeywords) }}\n- PAA Questions: {{ JSON.stringify($('Parse Strategy').first().json.keywordStrategy.paaQuestions) }}\n\n## RETURN ONLY VALID JSON:\n\n{\"trendAnalysis\":{\"topTrends\":[\"3-5 trends\"],\"industryMomentum\":\"direction assessment\"},\"rankedStories\":[{\"rank\":1,\"title\":\"title\",\"source\":\"pub\",\"url\":\"url\",\"relevanceScore\":95,\"summary\":\"3-4 sentence summary with facts\",\"keyDataPoints\":[\"stats/quotes\"],\"whyItMatters\":\"why audience cares\",\"keywordAlignment\":[\"matching keywords\"],\"aeoAngle\":\"AEO writing angle\"}],\"topStory\":{\"title\":\"#1 story\",\"url\":\"url\",\"source\":\"pub\",\"fullSummary\":\"detailed 5-6 sentence summary with data\",\"suggestedAngle\":\"best AEO angle\",\"supportingData\":[\"all data points\"]},\"newsletterStories\":[{\"title\":\"title\",\"source\":\"pub\",\"url\":\"url\",\"hook\":\"2-line hook\",\"category\":\"AI & ML | Cloud | Security | etc\"}]}\n\n\n\n## DEDUPLICATION — READ CAREFULLY\nYou MUST return FRESH stories only. The following stories have ALREADY been featured in recent weeks — SKIP THEM:\n{{ JSON.stringify($('Merge Keyword Data').first().json.contentHistory ? $('Merge Keyword Data').first().json.contentHistory.usedTitles : []) }}\n\nPreviously covered top stories (DO NOT feature these again):\n{{ JSON.stringify($('Merge Keyword Data').first().json.contentHistory ? $('Merge Keyword Data').first().json.contentHistory.usedTopStories : []) }}\n\nIf an RSS item covers the same EVENT as a previously used story (even with different wording), SKIP IT.\n\n## QUALITY RULES\n- Only include stories with SPECIFIC facts: company names, dollar amounts, dates, product names, survey results\n- REJECT vague trend pieces with no concrete data (e.g. \"AI is transforming data centers\" with no specifics)\n- Each story summary must include at least ONE number (revenue, percentage, capacity, headcount, etc.)\n- If an RSS story is just a press release with no analysis, SKIP IT\n- Prioritize: vendor-neutral analysis > specific incident reports > market data > opinion pieces\n\nRank 12+ stories. Include ALL original URLs. Prioritize keyword-aligned, data-rich, timely stories. ONLY from 2026 sources — discard 2024/2025 articles.\n\nIMPORTANT: Prioritize FRESH stories that haven't been widely covered yet. Look for breaking news, new reports, recent announcements, and emerging trends. Favor stories published in the last 7 days over older ones.",
+        "documentUrls": "={{ $json.fileUri || $json.uri }}",
+        "options": {}
+      },
+      "id": "8e06f2cc-f458-48b5-9900-7567444799fe",
+      "name": "Gemini - Deep Research",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "position": [
+        3824,
+        1200
+      ],
+      "typeVersion": 1.1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\n\n// Robust text extraction — handles Gemini, OpenAI, and raw formats\nfunction extractText(r) {\n  if (typeof r.text === 'string' && r.text.length > 0) return r.text;\n  if (typeof r.message === 'string' && r.message.length > 0) return r.message;\n  if (r.output && Array.isArray(r.output)) {\n    return r.output.map(o => {\n      if (typeof o.content === 'string') return o.content;\n      if (Array.isArray(o.content)) return o.content.map(c => c.text || '').join('');\n      return o.text || '';\n    }).join('');\n  }\n  if (r.content && r.content.parts) return r.content.parts.map(p => p.text || '').join('');\n  if (r.content && Array.isArray(r.content)) return r.content.map(c => c.text || '').join('');\n  if (r.candidates && Array.isArray(r.candidates)) return r.candidates.map(c => c.content && c.content.parts ? c.content.parts.map(p => p.text || '').join('') : '').join('');\n  if (typeof r.output === 'string') return r.output;\n  return JSON.stringify(r);\n}\n\nlet text = extractText(response);\ntext = text.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\ntry {\n  const parsed = JSON.parse(text);\n\n  // === DEDUPLICATION: Filter recently used stories (last 4 weeks) ===\n  const staticData = $getWorkflowStaticData('global');\n  const histEntries = staticData.contentHistory || [];\n  // Only filter against last 4 runs — older stories can be reused with fresh angles\n  const recentEntries = histEntries.slice(-4);\n  const usedUrls = new Set(recentEntries.flatMap(h => h.storyUrls || []));\n  const usedTitlesLow = new Set(recentEntries.map(h => (h.topStoryTitle || '').toLowerCase()).filter(Boolean));\n\n  // Save originals for fallback\n  const origRanked = parsed.rankedStories ? parsed.rankedStories.slice() : [];\n  const origNewsletter = parsed.newsletterStories ? parsed.newsletterStories.slice() : [];\n\n  // Filter ranked stories — remove recently featured\n  if (parsed.rankedStories && parsed.rankedStories.length > 0) {\n    const filtered = parsed.rankedStories.filter(s =>\n      !usedUrls.has(s.url) && !usedTitlesLow.has((s.title || '').toLowerCase())\n    );\n    // Fallback: if too few stories remain, restore originals\n    parsed.rankedStories = filtered.length >= 3 ? filtered : origRanked;\n  }\n\n  // Filter newsletter stories — remove recent duplicates\n  if (parsed.newsletterStories && parsed.newsletterStories.length > 0) {\n    const filtered = parsed.newsletterStories.filter(s => !usedUrls.has(s.url));\n    parsed.newsletterStories = filtered.length >= 3 ? filtered : origNewsletter;\n  }\n\n  // If top story was recently used, swap to next fresh one\n  if (parsed.topStory) {\n    const topUsed = usedUrls.has(parsed.topStory.url) || usedTitlesLow.has((parsed.topStory.title || '').toLowerCase());\n    if (topUsed && parsed.rankedStories && parsed.rankedStories.length > 0) {\n      // Find first story that differs from current top\n      const alt = parsed.rankedStories.find(s => s.url !== parsed.topStory.url);\n      if (alt) {\n        parsed.topStory = {\n          title: alt.title || '',\n          url: alt.url || '',\n          source: alt.source || '',\n          fullSummary: alt.summary || alt.fullSummary || '',\n          suggestedAngle: alt.aeoAngle || alt.suggestedAngle || '',\n          supportingData: alt.keyDataPoints || alt.supportingData || []\n        };\n      }\n    }\n  }\n\n  parsed._dedup = { storiesFiltered: usedUrls.size, historyEntries: histEntries.length, recentWindow: recentEntries.length };\n  return [{ json: parsed }];\n} catch(e) {\n  return [{ json: { trendAnalysis: { topTrends: [], industryMomentum: '' }, rankedStories: [], topStory: { title: 'Research unavailable', url: '', source: '', fullSummary: text.substring(0, 500), suggestedAngle: '', supportingData: [] }, newsletterStories: [] } }];\n}\n"
+      },
+      "id": "8842f0a2-eb2e-439d-96d9-aa27642e8a0f",
+      "name": "Parse Research",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        4128,
+        1200
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=# WRITE AEO-OPTIMIZED ARTICLE\n\n## TODAY'S DATE: {{ new Date().toISOString().split('T')[0] }}\n\nCRITICAL: We are in 2026. ALL dates, references, and statistics MUST be from 2026. NEVER write 2024 or 2025 dates. If source data has old dates, update to current or omit entirely.\n\n## PREVIOUSLY COVERED — DO NOT DUPLICATE\nPreviously written articles (NEVER repeat these topics or angles):\n{{ JSON.stringify($('Merge Keyword Data').first().json.contentHistory ? $('Merge Keyword Data').first().json.contentHistory.usedTitles : []) }}\n\nPrevious top stories covered:\n{{ JSON.stringify($('Merge Keyword Data').first().json.contentHistory ? $('Merge Keyword Data').first().json.contentHistory.usedTopStories : []) }}\n\nWrite about a COMPLETELY DIFFERENT angle. Use a fresh narrative structure. Do NOT rehash topics from the list above.\n\n## Client\n- Industry: {{ $('Client Configuration').first().json.industry }}\n- Audience: {{ $('Client Configuration').first().json.targetAudience }}\n- Brand: {{ $('Client Configuration').first().json.brandName }}\n- Tone: {{ $('Client Configuration').first().json.tone }}\n\n## Keyword Strategy\n- Primary: {{ $('Parse Strategy').first().json.keywordStrategy.primaryKeyword }}\n- Secondary: {{ JSON.stringify($('Parse Strategy').first().json.keywordStrategy.secondaryKeywords) }}\n- Long-tail: {{ JSON.stringify($('Parse Strategy').first().json.keywordStrategy.longTailKeywords) }}\n\n## Content Brief\n- Title: {{ $('Parse Strategy').first().json.contentBrief.recommendedTitle }}\n- Angle: {{ $('Parse Strategy').first().json.contentBrief.articleAngle }}\n- Headings: {{ JSON.stringify($('Parse Strategy').first().json.contentBrief.headingStructure) }}\n- FAQs: {{ JSON.stringify($('Parse Strategy').first().json.contentBrief.faqQuestions) }}\n- Takeaways: {{ JSON.stringify($('Parse Strategy').first().json.contentBrief.keyTakeaways) }}\n- AEO Opening: {{ $('Parse Strategy').first().json.contentBrief.aeoOptimization.directAnswerOpening }}\n\n## Top Story (Source)\n- Title: {{ $('Parse Research').first().json.topStory.title }}\n- Source: {{ $('Parse Research').first().json.topStory.source }}\n- Summary: {{ $('Parse Research').first().json.topStory.fullSummary }}\n- Data: {{ JSON.stringify($('Parse Research').first().json.topStory.supportingData) }}\n\n## RULES\n1. Start with direct 2-3 sentence answer (for AI engines)\n2. Key Takeaways box: 3-5 data-driven bullets\n3. H2/H3 headings as natural questions\n4. Weave keywords naturally, never stuff\n5. End with 2-3 FAQ Q&As from PAA data\n6. Close with actionable recommendations\n7. STRICTLY 800-1000 words\n\nReturn clean HTML using: .article-content wrapper, h2/h3, .key-takeaways box, .faq-section, .faq-item classes.\n\nAfter HTML, add delimiter:\n|||META|||\n{\"title\":\"article title\",\"slug\":\"url-slug\",\"excerpt\":\"2 sentence preview\",\"primaryKeyword\":\"kw\",\"wordCount\":900}\n\nReturn ONLY HTML + metadata. No markdown fences."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "instructions": "You are a world-class AEO content writer. You write data-driven articles optimized for AI answer engines AND traditional search. Every sentence earns its place. No filler. All content must reference 2026 data only. Never use 2024 or 2025 dates. Return clean HTML.",
+          "maxTokens": 4096,
+          "temperature": 0.7
+        }
+      },
+      "id": "b55c493b-05e5-4364-b5e7-79db1a559d28",
+      "name": "GPT-4.1 - Write Article",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2320,
+        1696
+      ],
+      "typeVersion": 2.1,
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\n\n// Robust text extraction — handles OpenAI Responses API, simplified, and raw formats\nfunction extractText(r) {\n  if (typeof r.text === 'string' && r.text.length > 0) return r.text;\n  if (typeof r.message === 'string' && r.message.length > 0) return r.message;\n  if (r.output && Array.isArray(r.output)) {\n    return r.output.map(o => {\n      if (typeof o.content === 'string') return o.content;\n      if (Array.isArray(o.content)) return o.content.map(c => c.text || '').join('');\n      return o.text || '';\n    }).join('');\n  }\n  if (r.content && Array.isArray(r.content)) return r.content.map(c => c.text || '').join('');\n  if (typeof r.output === 'string') return r.output;\n  return '';\n}\n\nlet text = extractText(r);\n\nconst parts = text.split('|||META|||');\nconst articleHtml = parts[0].replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nlet metadata = { title: 'Article', slug: 'article', excerpt: '', wordCount: 0 };\nif (parts[1]) {\n  try { metadata = JSON.parse(parts[1].replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim()); } catch(e) {}\n}\nreturn [{ json: { articleHtml, metadata } }];\n"
+      },
+      "id": "135ebab2-bdb3-4883-9bba-345dfec67f6f",
+      "name": "Extract Article",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2624,
+        1696
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=# AEO OPTIMIZATION REVIEW\n\n## TODAY'S DATE: {{ new Date().toISOString().split('T')[0] }}\n\nCRITICAL: Verify ALL dates in the article are 2026. Fix or remove any 2024/2025 references.\n\n## Keywords\n- Primary: {{ $('Parse Strategy').first().json.keywordStrategy.primaryKeyword }}\n- Secondary: {{ JSON.stringify($('Parse Strategy').first().json.keywordStrategy.secondaryKeywords) }}\n\n## Article to Optimize\n{{ $json.articleHtml }}\n\n## SCORING CHECKLIST — Score each criterion 0-20 points (100 total). Be HONEST, every article is different.\n1. DIRECT ANSWER (0-20): Does the opening directly answer the core question in 2-3 clear sentences?\n2. DATA RICHNESS (0-20): Are takeaways specific with real 2026 numbers, stats, or expert quotes?\n3. QUESTION HEADINGS (0-20): Do H2/H3 match natural questions AI engines actually surface?\n4. KEYWORD INTEGRATION (0-20): Is primary keyword in title, first paragraph, 2+ H2s, and conclusion?\n5. FAQ QUALITY (0-20): Are FAQ answers specific, useful, and directly quotable by AI?\n\nAdd up your scores honestly. The total WILL be different for every article. NEVER default to 85.\n\n## OUTPUT\nReturn OPTIMIZED article HTML. Preserve CSS classes. Make REAL targeted improvements based on THIS article's specific weaknesses. Every article needs DIFFERENT optimizations. Keep 800-1000 words.\n\nAfter HTML add:\n|||META|||\n{\"title\":\"optimized title\",\"slug\":\"url-slug\",\"excerpt\":\"2 sentence excerpt\",\"primaryKeyword\":\"kw\",\"wordCount\":900,\"aeoScore\":0,\"optimizations\":[\"describe each SPECIFIC change you made to THIS article - must be different every time\"]}\n\nIMPORTANT: Replace aeoScore 0 with YOUR calculated total from the 5 criteria above. Each article WILL score differently. List SPECIFIC optimizations you actually performed."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "instructions": "You are a senior AEO editor. Make targeted improvements to maximize AI answer engine visibility. Verify all dates are 2026 - remove any 2024/2025 references. Calculate AEO score HONESTLY per article using the 5 criteria - never default to 85. List SPECIFIC optimizations you made. Surgical edits only. Return clean HTML.",
+          "maxTokens": 4096,
+          "temperature": 0.5
+        }
+      },
+      "id": "738855fc-008d-4fac-a47f-34ae30fef1f8",
+      "name": "GPT-4.1 - AEO Editor",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2928,
+        1696
+      ],
+      "typeVersion": 2.1,
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst r = $input.first().json;\n\nfunction extractText(r) {\n  if (typeof r.text === 'string' && r.text.length > 0) return r.text;\n  if (typeof r.message === 'string' && r.message.length > 0) return r.message;\n  if (r.output && Array.isArray(r.output)) {\n    return r.output.map(o => {\n      if (typeof o.content === 'string') return o.content;\n      if (Array.isArray(o.content)) return o.content.map(c => c.text || '').join('');\n      return o.text || '';\n    }).join('');\n  }\n  if (r.content && Array.isArray(r.content)) return r.content.map(c => c.text || '').join('');\n  if (typeof r.output === 'string') return r.output;\n  return '';\n}\n\nlet text = extractText(r);\nconst parts = text.split('|||META|||');\nlet articleHtml = parts[0].replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nlet metadata = $('Extract Article').first().json.metadata || {};\nif (parts[1]) {\n  try { metadata = JSON.parse(parts[1].replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim()); } catch(e) {}\n}\n\n// QUALITY GATE — flag but don't block\nconst buzzwords = ['leverage', 'synergy', 'cutting-edge', 'game-changing', 'innovative', 'harness the power', 'revolutionize', 'paradigm', 'holistic', 'digital transformation', 'best-in-class', 'next-generation', 'rapidly evolving', 'in today\\'s'];\nconst lowerHtml = articleHtml.toLowerCase();\nconst found = buzzwords.filter(b => lowerHtml.includes(b));\nif (found.length > 0) {\n  metadata.qualityWarning = 'BUZZWORDS DETECTED: ' + found.join(', ');\n}\n\n// Check for 2024/2025 date references\nif (lowerHtml.includes('2024') || lowerHtml.includes('2025')) {\n  metadata.dateWarning = 'OLD DATES DETECTED — article contains 2024/2025 references';\n}\n\nconst config = $('Client Configuration').first().json;\nconst articleUrl = (config.articleBaseUrl || 'https://www.tredent.com/insights/') + (metadata.slug || 'article');\n\nreturn [{ json: { articleHtml, articleUrl, metadata } }];\n"
+      },
+      "id": "e6af091a-2b0b-4d46-a3d7-bb45c8369055",
+      "name": "Finalize Article",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3232,
+        1696
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=# GENERATE NEWSLETTER DIGEST\n\n## Client\n- Brand: {{ $('Client Configuration').first().json.brandName }}\n- Industry: {{ $('Client Configuration').first().json.industry }}\n- Audience: {{ $('Client Configuration').first().json.targetAudience }}\n- Tone: {{ $('Client Configuration').first().json.tone }}\n- Brand Color: {{ $('Client Configuration').first().json.brandColor }}\n- Highlight Color: {{ $('Client Configuration').first().json.highlightColor }}\n\n## Featured Article\n- Title: {{ $('Finalize Article').first().json.metadata.title }}\n- Excerpt: {{ $('Finalize Article').first().json.metadata.excerpt }}\n- URL: {{ $('Finalize Article').first().json.articleUrl }}\n\n## Stories from Research\n{{ JSON.stringify($('Parse Research').first().json.newsletterStories || $('Parse Research').first().json.rankedStories, null, 1) }}\n\n## Date: {{ new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}\n\nCRITICAL: We are in 2026. ALL story dates and references MUST be from 2026. Never include 2024 or 2025 dates.\n\nDEDUPLICATION: The stories provided have already been filtered for uniqueness. Use ALL provided stories — they are guaranteed fresh. Write each summary with a UNIQUE hook and angle. Vary your writing style across stories.\n\n## INSTRUCTIONS\nCreate newsletter content HTML (NOT a full page — just the content section).\n\n1. Editorial intro: 2-3 sentences on the week's trends\n2. Group 8-12 stories by category (AI & ML, Cloud, Security, etc.)\n3. Each story: bold linked title, 2-3 line summary, source\n4. Use INLINE styles only (email-safe)\n5. Category badges: background {{ $('Client Configuration').first().json.highlightColor }}, white text, uppercase 10px\n6. FIRST story (Featured article) title: 15px bold, color {{ $('Client Configuration').first().json.brandColor }} (brand RED) — this is the featured story and MUST stand out\n7. ALL OTHER story titles: 15px bold, color #111 (BLACK)\n8. Summaries: 13px, color #555, line-height 1.6\n9. Links: color {{ $('Client Configuration').first().json.brandColor }}, no underline, font-weight 600\n10. Use real URLs from the research data\n\nReturn ONLY the HTML content. No full page wrapper. No markdown fences."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "instructions": "You are an expert newsletter copywriter. Write concise, engaging story summaries with inline CSS for email. Use real URLs. Output clean HTML content only.",
+          "maxTokens": 8192,
+          "temperature": 0.6
+        }
+      },
+      "id": "cb10191f-9f64-4b4c-9848-72c68e1dd522",
+      "name": "GPT-4.1 - Newsletter",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        3536,
+        1696
+      ],
+      "typeVersion": 2.1,
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\n\n// Robust text extraction — handles OpenAI Responses API, simplified, and raw formats\nfunction extractText(r) {\n  if (typeof r.text === 'string' && r.text.length > 0) return r.text;\n  if (typeof r.message === 'string' && r.message.length > 0) return r.message;\n  if (r.output && Array.isArray(r.output)) {\n    return r.output.map(o => {\n      if (typeof o.content === 'string') return o.content;\n      if (Array.isArray(o.content)) return o.content.map(c => c.text || '').join('');\n      return o.text || '';\n    }).join('');\n  }\n  if (r.content && Array.isArray(r.content)) return r.content.map(c => c.text || '').join('');\n  if (typeof r.output === 'string') return r.output;\n  return '';\n}\n\nlet html = extractText(r);\nhtml = html.replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nreturn [{ json: { newsletterHtml: html } }];\n"
+      },
+      "id": "f9421e22-f256-45db-af2d-06628d8b6c3a",
+      "name": "Clean Newsletter",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3824,
+        1696
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=# GENERATE VIDEO SCRIPTS\n\n## Client\n- Brand: {{ $('Client Configuration').first().json.brandName }}\n- Industry: {{ $('Client Configuration').first().json.industry }}\n- Audience: {{ $('Client Configuration').first().json.targetAudience }}\n- Tone: {{ $('Client Configuration').first().json.tone }}\n- Brand Color: {{ $('Client Configuration').first().json.brandColor }}\n\n## Top Story\n- Title: {{ $('Parse Research').first().json.topStory.title }}\n- Summary: {{ $('Parse Research').first().json.topStory.fullSummary }}\n- Data Points: {{ JSON.stringify($('Parse Research').first().json.topStory.supportingData) }}\n\n## Primary Keyword: {{ $('Parse Strategy').first().json.keywordStrategy.primaryKeyword }}\n\n## TODAY'S DATE: {{ new Date().toISOString().split('T')[0] }}\nCRITICAL: All references and data must be current (2026). Never use 2024 or 2025 dates.\n\nUNIQUENESS: This script topic has been specifically selected to avoid repeating previous weeks. Write with a FRESH perspective, unique hooks, and original analogies. Never use generic openings.\n\n## INSTRUCTIONS\n\nGenerate TWO scripts as HTML content (NOT full page):\n\n### Script A — Short-Form (under 60s, Reels/TikTok/Shorts)\n- Hook in 3 seconds (bold claim or surprising stat)\n- ONE key insight\n- Clear CTA\n- Format: [VISUAL] Script text with timing\n\n### Script B — Long-Form (~5 min, YouTube)\n- Hook intro (30s)\n- 3-4 talking points with analysis\n- B-roll suggestions\n- Subscribe CTA\n- Format: [TIMESTAMP] [VISUAL] Script text\n\nUse inline styles:\n- Script headers: 16px bold, color {{ $('Client Configuration').first().json.brandColor }}\n- Script blocks: background #f8f9fc, border-radius 10px, padding 18px, font-family monospace, 13px, line-height 1.8\n- Visual cues: color #6366f1, font-weight bold\n- Timestamps: color #999\n\nReturn ONLY HTML content. No markdown fences."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "instructions": "You are an expert video script writer for social media and YouTube. Write viral, retention-optimized scripts. Conversational but professional. Output clean HTML only.",
+          "maxTokens": 4096,
+          "temperature": 0.7
+        }
+      },
+      "id": "86363e79-2a7f-4c92-b601-2c3fe7449488",
+      "name": "GPT-4.1 - Video Scripts",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        4128,
+        1696
+      ],
+      "typeVersion": 2.1,
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\n\n// Robust text extraction — handles OpenAI Responses API, simplified, and raw formats\nfunction extractText(r) {\n  if (typeof r.text === 'string' && r.text.length > 0) return r.text;\n  if (typeof r.message === 'string' && r.message.length > 0) return r.message;\n  if (r.output && Array.isArray(r.output)) {\n    return r.output.map(o => {\n      if (typeof o.content === 'string') return o.content;\n      if (Array.isArray(o.content)) return o.content.map(c => c.text || '').join('');\n      return o.text || '';\n    }).join('');\n  }\n  if (r.content && Array.isArray(r.content)) return r.content.map(c => c.text || '').join('');\n  if (typeof r.output === 'string') return r.output;\n  return '';\n}\n\nlet html = extractText(r);\nhtml = html.replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nreturn [{ json: { videoScriptsHtml: html } }];\n"
+      },
+      "id": "07942613-df02-4509-afc8-728ac52a391e",
+      "name": "Clean Scripts",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        4432,
+        1696
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build 4 SEPARATE branded emails — one per output type\nconst config = $('Client Configuration').first().json;\n\nconst brand = config.brandName || 'Industry Brief';\nconst logo = config.logoUrl || '';\nconst primary = config.brandColor || '#6366f1';\nconst secondary = config.headerDarkColor || '#1a1a2e';\nconst accent = config.highlightColor || '#f59e0b';\nconst font = config.fontFamily || \"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif\";\nconst website = config.websiteUrl || '#';\nconst recipient = config.recipientEmail || 'client@example.com';\nconst sender = config.senderEmail || 'newsletter@example.com';\n\nconst articleUrl = $('Finalize Article').first().json.articleUrl || '#';\nconst articleHtml = $('Finalize Article').first().json.articleHtml || '';\nconst meta = $('Finalize Article').first().json.metadata || {};\nconst articleTitle = meta.title || 'Featured Article';\nconst articleExcerpt = meta.excerpt || '';\nconst aeoScore = meta.aeoScore != null ? meta.aeoScore : '';\nconst optimizations = meta.optimizations || [];\n\nconst newsletterHtml = $('Clean Newsletter').first().json.newsletterHtml || '';\nconst videoScriptsHtml = $('Clean Scripts').first().json.videoScriptsHtml || '';\n\nconst logoHtml = logo ? `<img src=\"${logo}\" alt=\"${brand}\" style=\"max-width:180px;height:auto;margin-bottom:12px;display:block;\" />` : '';\nconst today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\nconst dateShort = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });\n\n// Reusable email wrapper function\nfunction wrapEmail(subtitle, contentHtml, preheader) {\n  return `<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n<title>${brand} — ${subtitle}</title>\n<!--[if !mso]><!--><style>body{-webkit-font-smoothing:antialiased;}</style><!--<![endif]-->\n</head>\n<body style=\"margin:0;padding:0;background-color:#f4f4f5;font-family:${font};\">\n<div style=\"display:none;max-height:0;overflow:hidden;\">${preheader || subtitle}</div>\n<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"background-color:#f4f4f5;\">\n<tr><td align=\"center\" style=\"padding:24px 16px;\">\n<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"640\" style=\"max-width:640px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);\">\n\n<!-- HEADER -->\n<tr><td style=\"background:linear-gradient(135deg,${secondary} 0%,${primary} 100%);color:#fff;padding:36px 32px;\">\n${logoHtml}\n<h1 style=\"margin:0 0 6px;font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;\">${brand}</h1>\n<p style=\"margin:0;font-size:14px;color:rgba(255,255,255,0.7);\">${today} — ${subtitle}</p>\n</td></tr>\n\n<!-- CONTENT -->\n${contentHtml}\n\n<!-- FOOTER -->\n<tr><td style=\"background-color:#f9fafb;padding:24px 32px;text-align:center;\">\n<p style=\"margin:0 0 8px;font-size:13px;color:#888;\">Powered by <a href=\"${website}\" style=\"color:${primary};text-decoration:none;font-weight:700;\">${brand}</a> &bull; AEO Content Engine v6.0</p>\n<p style=\"margin:0;font-size:11px;color:#bbb;\"><a href=\"#\" style=\"color:#bbb;text-decoration:underline;\">Unsubscribe</a> &bull; <a href=\"${website}\" style=\"color:#bbb;text-decoration:underline;\">View Online</a></p>\n</td></tr>\n\n</table>\n</td></tr>\n</table>\n</body>\n</html>`;\n}\n\n// --- EMAIL 1: AEO ARTICLE (FULL CONTENT + HTML/DOCX ATTACHMENTS) ---\nconst articleContent = `<tr><td style=\"padding:32px;\">\n<p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2.5px;color:${primary};font-weight:700;margin:0 0 16px;\">FEATURED AEO ARTICLE</p>\n<h2 style=\"margin:0 0 16px;font-size:24px;color:#111;line-height:1.3;font-weight:700;\">${articleTitle}</h2>\n${aeoScore ? `<p style=\"margin:0 0 16px;font-size:13px;color:${primary};font-weight:600;\">AEO Score: ${aeoScore}/100</p>` : ''}\n<div style=\"font-size:16px;color:#333;line-height:1.8;\">\n${articleHtml}\n</div>\n${optimizations.length > 0 ? `<div style=\"margin-top:24px;padding:16px;background-color:#f8f9fc;border-radius:8px;border-left:4px solid ${primary};\">\n<p style=\"margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:${primary};font-weight:700;\">AEO Optimizations Applied</p>\n<ul style=\"margin:0;padding-left:18px;font-size:13px;color:#555;line-height:1.8;\">${optimizations.map(o => '<li>' + o + '</li>').join('')}</ul>\n</div>` : ''}\n<div style=\"margin-top:24px;padding:16px;background-color:#fffbeb;border-radius:8px;border-left:4px solid ${accent};\">\n<p style=\"margin:0;font-size:13px;color:#92400e;line-height:1.6;\"><strong>Attached files:</strong> Open the <strong>.html</strong> file to copy/paste the article into your CMS with formatting intact. The <strong>.doc</strong> file can be opened in Word for further editing.</p>\n</div>\n</td></tr>`;\n\nconst articleEmail = wrapEmail('AEO Article', articleContent, articleExcerpt);\n\n// --- EMAIL 2: NEWSLETTER DIGEST ---\nconst newsletterContent = `<tr><td style=\"padding:32px;\">\n<p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2.5px;color:${primary};font-weight:700;margin:0 0 20px;\">WEEKLY INDUSTRY DIGEST</p>\n${newsletterHtml || '<p style=\"font-size:16px;color:#555;\">No newsletter stories available this week.</p>'}\n</td></tr>`;\n\nconst newsletterEmail = wrapEmail('Weekly Digest', newsletterContent, 'Your curated industry news roundup');\n\n// --- EMAIL 3: VIDEO SCRIPTS ---\nconst scriptsContent = `<tr><td style=\"padding:32px;\">\n<p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2.5px;color:${primary};font-weight:700;margin:0 0 20px;\">VIDEO CONTENT SCRIPTS</p>\n<p style=\"margin:0 0 20px;font-size:14px;color:#888;line-height:1.6;\">Ready-to-use scripts for your social media and YouTube content. Includes a short-form script (Reels/TikTok/Shorts) and a long-form YouTube script.</p>\n${videoScriptsHtml || '<p style=\"font-size:16px;color:#555;\">No video scripts available this week.</p>'}\n</td></tr>`;\n\nconst scriptsEmail = wrapEmail('Video Scripts', scriptsContent, 'Your weekly video content scripts are ready');\n\n// --- EMAIL 4: WEEKLY ACTION STEPS (INSTRUCTIONS) ---\nconst instructionsContent = `<tr><td style=\"padding:32px;\">\n<p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2.5px;color:${primary};font-weight:700;margin:0 0 20px;\">YOUR WEEKLY ACTION STEPS</p>\n<p style=\"font-size:16px;color:#333;line-height:1.8;margin:0 0 24px;\">Everything from this week's content engine is ready. Follow these 4 steps to publish:</p>\n\n<div style=\"background:#f8f9fc;border-radius:10px;padding:24px;margin-bottom:20px;border-left:4px solid ${primary};\">\n<p style=\"margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:${primary};font-weight:700;\">STEP 1</p>\n<p style=\"margin:0 0 12px;font-size:18px;font-weight:700;color:#111;\">Record Your Social Media Videos</p>\n<p style=\"margin:0 0 12px;font-size:14px;color:#555;line-height:1.7;\">Open the <strong>Video Scripts email</strong> you received. You have two scripts ready:</p>\n<ul style=\"margin:0 0 12px;padding-left:20px;font-size:14px;color:#555;line-height:1.8;\">\n<li><strong>Short-Form Script</strong> (under 60 seconds) &mdash; for Instagram Reels, TikTok, YouTube Shorts</li>\n<li><strong>Long-Form Script</strong> (~5 minutes) &mdash; for YouTube and LinkedIn Video</li>\n</ul>\n<p style=\"margin:0 0 8px;font-size:14px;color:#555;line-height:1.7;\"><strong>How to record:</strong></p>\n<ol style=\"margin:0;padding-left:20px;font-size:14px;color:#555;line-height:1.8;\">\n<li>Download the <a href=\"https://apps.apple.com/us/app/teleprompter/id941620509\" style=\"color:${primary};font-weight:600;text-decoration:none;\">Teleprompter App</a> (free on iPhone/iPad)</li>\n<li>Paste your script into the app</li>\n<li>Position your phone/camera so you <strong>look at and read from the top of the screen</strong> &mdash; this keeps eye contact natural</li>\n<li>Record and post to <strong>LinkedIn</strong> and <strong>Instagram</strong></li>\n</ol>\n</div>\n\n<div style=\"background:#f8f9fc;border-radius:10px;padding:24px;margin-bottom:20px;border-left:4px solid ${primary};\">\n<p style=\"margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:${primary};font-weight:700;\">STEP 2</p>\n<p style=\"margin:0 0 12px;font-size:18px;font-weight:700;color:#111;\">Upload AEO Article to Your CMS</p>\n<ol style=\"margin:0;padding-left:20px;font-size:14px;color:#555;line-height:1.8;\">\n<li>Open the <strong>AEO Article email</strong> you received</li>\n<li>Open the attached <strong>.html file</strong> in your browser (double-click it)</li>\n<li>Select all the article content (Ctrl+A / Cmd+A) and <strong>copy</strong> it (Ctrl+C / Cmd+C)</li>\n<li>Go to your CMS (WordPress, HubSpot, etc.) &rarr; create a new blog post</li>\n<li><strong>Paste</strong> the content (Ctrl+V / Cmd+V) &mdash; formatting carries over automatically</li>\n<li>Review, add a featured image, and publish</li>\n</ol>\n</div>\n\n<div style=\"background:#f8f9fc;border-radius:10px;padding:24px;margin-bottom:20px;border-left:4px solid ${primary};\">\n<p style=\"margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:${primary};font-weight:700;\">STEP 3</p>\n<p style=\"margin:0 0 12px;font-size:18px;font-weight:700;color:#111;\">Add Your Article Link to the Newsletter</p>\n<p style=\"margin:0 0 12px;font-size:14px;color:#555;line-height:1.7;\">Once your article is live on your website:</p>\n<ol style=\"margin:0;padding-left:20px;font-size:14px;color:#555;line-height:1.8;\">\n<li>Copy the <strong>live URL</strong> of your published article</li>\n<li>Open the <strong>Weekly Digest email</strong> you received</li>\n<li>The first story (highlighted in your brand color) is your featured article</li>\n<li>When you set up the newsletter in your CRM (next step), simply <strong>replace the placeholder link with your live article URL</strong></li>\n</ol>\n</div>\n\n<div style=\"background:#f8f9fc;border-radius:10px;padding:24px;margin-bottom:20px;border-left:4px solid ${primary};\">\n<p style=\"margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:${primary};font-weight:700;\">STEP 4</p>\n<p style=\"margin:0 0 12px;font-size:18px;font-weight:700;color:#111;\">Send Newsletter via Your CRM</p>\n<ol style=\"margin:0;padding-left:20px;font-size:14px;color:#555;line-height:1.8;\">\n<li>Open the <strong>Weekly Digest email</strong> you received</li>\n<li>Open the attached <strong>.doc file</strong> &mdash; or copy the email content directly</li>\n<li>In your CRM (HubSpot, Mailchimp, ActiveCampaign, etc.) &rarr; create a new email campaign</li>\n<li>Paste the newsletter content</li>\n<li>Update the featured article link to your live URL (from Step 3)</li>\n<li>Select your subscriber list, preview, and <strong>send</strong></li>\n</ol>\n</div>\n\n<div style=\"background:linear-gradient(135deg,${secondary} 0%,${primary} 100%);border-radius:10px;padding:20px 24px;margin-top:24px;\">\n<p style=\"margin:0;font-size:14px;color:rgba(255,255,255,0.9);line-height:1.7;text-align:center;\"><strong style=\"color:#fff;\">Pro tip:</strong> Do these steps in order. Record videos first (freshest energy), then handle the written content.</p>\n</div>\n</td></tr>`;\n\nconst instructionsEmail = wrapEmail('Weekly Action Steps', instructionsContent, 'Your 4-step guide to publishing this week\\'s content');\n\n// Generate Word-compatible DOCX attachment for client editing\nfunction makeDocx(title, body) {\n  return '<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" xmlns=\"http://www.w3.org/TR/REC-html40\">'\n    + '<head><meta charset=\"utf-8\"><title>' + title + '</title>'\n    + '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->'\n    + '<style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.8;color:#333;margin:72px;}'\n    + 'h1{font-size:22pt;color:' + secondary + ';margin-bottom:8px;}'\n    + 'h2{font-size:16pt;color:#333;border-bottom:1pt solid #ddd;padding-bottom:4pt;margin-top:18pt;}'\n    + 'h3{font-size:13pt;color:#555;}'\n    + 'a{color:' + primary + ';}'\n    + 'ul,ol{margin-left:20px;}'\n    + '.key-takeaways{background:#f0f9ff;border:1px solid #bae6fd;padding:16px;margin:16px 0;}'\n    + '.faq-section{margin-top:24px;}'\n    + '</style></head><body>' + body + '</body></html>';\n}\n\nfunction docxBin(title, body) {\n  var html = makeDocx(title, body);\n  var fn = title.replace(/[^a-zA-Z0-9 -]/g, '').replace(/\\s+/g, '-').substring(0, 80) + '.doc';\n  return { data: Buffer.from(html, 'utf8').toString('base64'), mimeType: 'application/msword', fileName: fn, fileExtension: 'doc' };\n}\n\n// Generate clean HTML file for easy copy/paste into CMS\nfunction htmlBin(title, body) {\n  var cleanHtml = '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>' + title + '</title>'\n    + '<style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.8;color:#333;}'\n    + 'h1{color:' + secondary + ';font-size:28px;margin-bottom:12px;}'\n    + 'h2{color:#333;font-size:22px;border-bottom:1px solid #ddd;padding-bottom:8px;margin-top:24px;}'\n    + 'h3{color:#555;font-size:18px;}'\n    + 'a{color:' + primary + ';}'\n    + 'ul,ol{margin-left:20px;}'\n    + '.key-takeaways{background:#f0f9ff;border:1px solid #bae6fd;padding:16px 20px;margin:16px 0;border-radius:8px;}'\n    + '.faq-section{margin-top:24px;}.faq-item{margin-bottom:16px;}'\n    + '</style></head><body>' + body + '</body></html>';\n  var fn = title.replace(/[^a-zA-Z0-9 -]/g, '').replace(/\\s+/g, '-').substring(0, 80) + '.html';\n  return { data: Buffer.from(cleanHtml, 'utf8').toString('base64'), mimeType: 'text/html', fileName: fn, fileExtension: 'html' };\n}\n\nvar artDocBody = '<h1>' + articleTitle + '</h1>' + articleHtml\n  + (optimizations.length > 0 ? '<h2>AEO Optimizations Applied</h2><ul>' + optimizations.map(function(o) { return '<li>' + o + '</li>'; }).join('') + '</ul>' : '')\n  + (aeoScore ? '<p><strong>AEO Score:</strong> ' + aeoScore + '/100</p>' : '');\n\n// Return 4 separate items with attachments — Send Email node will process each one\nreturn [\n  { json: { html: articleEmail, subject: `${brand} — AEO Article: ${articleTitle}`, recipientEmail: recipient, senderEmail: sender, emailType: 'article' }, binary: { attachment: docxBin(brand + ' - AEO Article - ' + dateShort, artDocBody), attachment_html: htmlBin(brand + ' - AEO Article - ' + dateShort, artDocBody) } },\n  { json: { html: newsletterEmail, subject: `${brand} — Weekly Digest — ${dateShort}`, recipientEmail: recipient, senderEmail: sender, emailType: 'newsletter' }, binary: { attachment: docxBin(brand + ' - Weekly Digest - ' + dateShort, '<h1>' + brand + ' Weekly Digest</h1><p>' + today + '</p>' + newsletterHtml) } },\n  { json: { html: scriptsEmail, subject: `${brand} — Video Scripts — ${dateShort}`, recipientEmail: recipient, senderEmail: sender, emailType: 'scripts' }, binary: { attachment: docxBin(brand + ' - Video Scripts - ' + dateShort, '<h1>Video Scripts</h1><p>' + today + '</p>' + videoScriptsHtml) } },\n  { json: { html: instructionsEmail, subject: `${brand} — Weekly Action Steps`, recipientEmail: recipient, senderEmail: sender, emailType: 'instructions' } }\n];\n"
+      },
+      "id": "847b4cf5-bfc7-4ad6-bcdd-6d59429e7bdc",
+      "name": "Build Separate Emails",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2320,
+        2192
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.senderEmail }}",
+        "toEmail": "={{ $json.recipientEmail }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "ed7135da-c036-4b6b-879c-c3937e4d5172",
+      "name": "Send Emails",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        2624,
+        2192
+      ],
+      "typeVersion": 2.1,
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "smtp": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "SMTP account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Save this run's content to history for future deduplication\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.contentHistory) staticData.contentHistory = [];\n\n// Collect data from this run\nlet article, research, strategy;\ntry { article = $('Finalize Article').first().json; } catch(e) { article = {}; }\ntry { research = $('Parse Research').first().json; } catch(e) { research = {}; }\ntry { strategy = $('Parse Strategy').first().json; } catch(e) { strategy = {}; }\n\nconst entry = {\n  timestamp: new Date().toISOString(),\n  week: new Date().toISOString().split('T')[0],\n  primaryKeyword: (strategy.keywordStrategy || {}).primaryKeyword || '',\n  queryKeyword: (() => { try { return $('Prepare Keywords').first().json.primaryKeyword || ''; } catch(e) { return ''; } })(),\n  secondaryKeywords: (strategy.keywordStrategy || {}).secondaryKeywords || [],\n  articleTitle: (article.metadata || {}).title || '',\n  articleSlug: (article.metadata || {}).slug || '',\n  articleAngle: (strategy.contentBrief || {}).articleAngle || '',\n  topStoryTitle: (research.topStory || {}).title || '',\n  topStoryUrl: (research.topStory || {}).url || '',\n  storyUrls: [\n    ...((research.rankedStories || []).map(s => s.url).filter(Boolean)),\n    ...((research.newsletterStories || []).map(s => s.url).filter(Boolean))\n  ],\n  aeoScore: (article.metadata || {}).aeoScore || null,\n  articleStructure: (() => { try { return $('Prepare Keywords').first().json.articleStructure.name || ''; } catch(e) { return ''; } })()\n};\n\nstaticData.contentHistory.push(entry);\n\n// Keep last 52 entries (1 year of weekly runs)\nif (staticData.contentHistory.length > 52) {\n  staticData.contentHistory = staticData.contentHistory.slice(-52);\n}\n\nreturn [{ json: {\n  status: 'Content history saved successfully',\n  totalEntries: staticData.contentHistory.length,\n  latestEntry: entry,\n  message: 'Next run will automatically avoid: ' + entry.articleTitle\n} }];\n"
+      },
+      "id": "faa42dd5-a03a-44ee-bf91-fbe4604d5b3d",
+      "name": "Save Content History",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2928,
+        2192
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// MANUAL USE ONLY: Run this node to clear content history\n// Disconnect it from the main flow — only use when you want to reset\nconst staticData = $getWorkflowStaticData('global');\nconst oldCount = (staticData.contentHistory || []).length;\nstaticData.contentHistory = [];\nreturn [{ json: {\n  status: 'Content history CLEARED',\n  entriesRemoved: oldCount,\n  message: 'All dedup history has been reset. Next run will start fresh.'\n} }];\n"
+      },
+      "id": "94b3311c-1e35-470b-82f4-5293386a05a7",
+      "name": "RESET History (Manual)",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3232,
+        2192
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "## Deduplication System (Auto)\n\nThis workflow automatically tracks content history to prevent duplicates:\n\n**How it works:**\n1. Each run saves: keywords, article title, story URLs, angles\n2. Next run filters out previously used stories from RSS\n3. GPT is told to avoid previously used keywords & angles\n4. Keeps last 52 entries (1 year of weekly runs)\n\n**Storage:** n8n Workflow Static Data (built-in, no external DB)\n\n**To reset history:** Run the 'RESET History (Manual)' node\nby itself (click Test on just that node). This clears all\nhistory so the next run starts completely fresh.\n\n**Nodes involved:**\n- Merge Keyword Data (loads history)\n- Parse Research (filters duplicate stories)\n- Save Content History (records after send)\n- All GPT prompts (exclusion instructions)",
+        "height": 520,
+        "width": 380,
+        "color": 6
+      },
+      "id": "c7b8b3c7-2447-45ff-a218-6429f4a88e33",
+      "name": "Sticky Note - Dedup System",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2864,
+        2496
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Weekly Trigger": {
+      "main": [
+        [
+          {
+            "node": "Client Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Client Configuration": {
+      "main": [
+        [
+          {
+            "node": "Prepare Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Keywords": {
+      "main": [
+        [
+          {
+            "node": "Autocomplete - Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Autocomplete - Keywords": {
+      "main": [
+        [
+          {
+            "node": "Autocomplete - Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Autocomplete - Questions": {
+      "main": [
+        [
+          {
+            "node": "Serper - SERP + PAA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Serper - SERP + PAA": {
+      "main": [
+        [
+          {
+            "node": "Merge Keyword Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Keyword Data": {
+      "main": [
+        [
+          {
+            "node": "GPT-4.1 - Keyword Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4.1 - Keyword Strategy": {
+      "main": [
+        [
+          {
+            "node": "Parse Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Strategy": {
+      "main": [
+        [
+          {
+            "node": "RSS Feed Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Feed Sources": {
+      "main": [
+        [
+          {
+            "node": "Split URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split URLs": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Feeds": {
+      "main": [
+        [
+          {
+            "node": "Convert to CSV",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read RSS Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RSS Feed": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to CSV": {
+      "main": [
+        [
+          {
+            "node": "Upload to Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Gemini": {
+      "main": [
+        [
+          {
+            "node": "Gemini - Deep Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Deep Research": {
+      "main": [
+        [
+          {
+            "node": "Parse Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Research": {
+      "main": [
+        [
+          {
+            "node": "GPT-4.1 - Write Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4.1 - Write Article": {
+      "main": [
+        [
+          {
+            "node": "Extract Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Article": {
+      "main": [
+        [
+          {
+            "node": "GPT-4.1 - AEO Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4.1 - AEO Editor": {
+      "main": [
+        [
+          {
+            "node": "Finalize Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Article": {
+      "main": [
+        [
+          {
+            "node": "GPT-4.1 - Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4.1 - Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Clean Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Newsletter": {
+      "main": [
+        [
+          {
+            "node": "GPT-4.1 - Video Scripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4.1 - Video Scripts": {
+      "main": [
+        [
+          {
+            "node": "Clean Scripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Scripts": {
+      "main": [
+        [
+          {
+            "node": "Build Separate Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Separate Emails": {
+      "main": [
+        [
+          {
+            "node": "Send Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Emails": {
+      "main": [
+        [
+          {
+            "node": "Save Content History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "YOUR_VERSION_ID",
+  "meta": {
+    "instanceId": "YOUR_INSTANCE_ID"
+  },
+  "id": "YOUR_WORKFLOW_ID",
+  "tags": []
+}
