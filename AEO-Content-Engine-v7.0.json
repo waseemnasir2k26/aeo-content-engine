@@ -641,7 +641,9 @@
         "toEmail": "={{ $json.recipientEmail }}",
         "subject": "={{ $json.subject }}",
         "html": "={{ $json.html }}",
-        "options": {}
+        "options": {
+          "attachments": "attachment,attachment_html"
+        }
       },
       "id": "ed7135da-c036-4b6b-879c-c3937e4d5172",
       "name": "Send Emails",
