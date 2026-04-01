@@ -1,0 +1,404 @@
+{
+  "name": "SkynetJoe AEO Content Engine v1.0 - AI Automation Agency",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "trigger-weekly",
+      "name": "Weekly Trigger (Mon 9am)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "industry", "value": "AI Automation & Web Development Agency" },
+            { "name": "audience", "value": "Small-to-medium business owners, startup founders, marketing managers seeking AI automation, chatbots, workflow automation, web development" },
+            { "name": "brandName", "value": "SkynetJoe Weekly AI Pulse" },
+            { "name": "senderName", "value": "Waseem Nasir" },
+            { "name": "senderEmail", "value": "waseem@skynetjoe.com" },
+            { "name": "recipientEmail", "value": "waseemhome8@gmail.com" },
+            { "name": "brandColor", "value": "#13b973" },
+            { "name": "brandColorSecondary", "value": "#8B5CF6" },
+            { "name": "websiteUrl", "value": "https://www.skynetjoe.com" },
+            { "name": "articleBaseUrl", "value": "https://www.skynetjoe.com/blog/" },
+            { "name": "logoUrl", "value": "https://www.skynetjoe.com/wp-content/themes/skynetlabs/assets/images/logo.png" },
+            { "name": "linkedinProfile", "value": "https://www.linkedin.com/in/waseemnasir/" },
+            { "name": "keywords", "value": "AI chatbot development, workflow automation agency, n8n automation services, AI video editing, social media automation, answer engine optimization, GoHighLevel automation, WordPress AI integration, lead generation automation, AI business systems, custom AI agents, AI content generation" }
+          ]
+        }
+      },
+      "id": "client-config",
+      "name": "SkynetJoe Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare keywords for rotation and research\nconst config = $input.first().json;\nconst allKeywords = config.keywords.split(', ');\n\n// Load history from workflow static data\nconst staticData = $getWorkflowStaticData('global');\nconst history = staticData.contentHistory || [];\nconst usedKeywords = history.slice(-8).map(h => h.keyword);\nconst usedTitles = history.slice(-4).map(h => h.title);\nconst usedAngles = history.slice(-4).map(h => h.angle);\nconst usedStoryUrls = history.slice(-4).flatMap(h => h.storyUrls || []);\n\n// Keyword variants for expansion\nconst variants = ['trends 2026', 'for small business', 'cost', 'vs alternative', 'best practices', 'ROI', 'case study', 'how to'];\n\n// Expand keyword pool\nconst expandedKeywords = [];\nfor (const kw of allKeywords) {\n  expandedKeywords.push(kw);\n  for (const v of variants.slice(0, 3)) {\n    expandedKeywords.push(`${kw} ${v}`);\n  }\n}\n\n// Rotate primary keyword (avoid last 8)\nconst availableKeywords = allKeywords.filter(k => !usedKeywords.includes(k));\nconst primaryKeyword = availableKeywords.length > 0 \n  ? availableKeywords[Math.floor(Math.random() * availableKeywords.length)]\n  : allKeywords[Math.floor(Math.random() * allKeywords.length)];\n\n// Question prefixes rotation\nconst prefixes = [\n  'what is', 'how to', 'why', 'best', 'top', 'how much does',\n  'is it worth', 'when to use', 'who needs', 'where to find',\n  'what are the benefits of', 'how does'\n];\nconst runCount = history.length;\nconst questionPrefix = prefixes[runCount % prefixes.length];\nconst questionQuery = `${questionPrefix} ${primaryKeyword}`;\n\n// Article structures rotation\nconst structures = ['deep-dive', 'problem-solution', 'case-study'];\nconst articleStructure = structures[runCount % structures.length];\n\nreturn [{\n  json: {\n    ...config,\n    primaryKeyword,\n    questionQuery,\n    articleStructure,\n    questionPrefix,\n    expandedKeywords: expandedKeywords.join('\\n'),\n    usedTitles: usedTitles.join('\\n'),\n    usedAngles: usedAngles.join('\\n'),\n    usedStoryUrls: usedStoryUrls.join('\\n'),\n    runNumber: runCount + 1\n  }\n}];"
+      },
+      "id": "prepare-keywords",
+      "name": "Prepare Keywords",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://suggestqueries.google.com/complete/search",
+        "options": {
+          "response": { "response": { "neverError": true } }
+        },
+        "queryParameters": {
+          "parameters": [
+            { "name": "client", "value": "firefox" },
+            { "name": "q", "value": "={{ $json.primaryKeyword }}" }
+          ]
+        }
+      },
+      "id": "autocomplete-keywords",
+      "name": "Autocomplete - Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 180]
+    },
+    {
+      "parameters": {
+        "url": "https://suggestqueries.google.com/complete/search",
+        "options": {
+          "response": { "response": { "neverError": true } }
+        },
+        "queryParameters": {
+          "parameters": [
+            { "name": "client", "value": "firefox" },
+            { "name": "q", "value": "={{ $json.questionQuery }}" }
+          ]
+        }
+      },
+      "id": "autocomplete-questions",
+      "name": "Autocomplete - Questions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 420]
+    },
+    {
+      "parameters": {
+        "url": "https://google.serper.dev/search",
+        "method": "POST",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "serperApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "q", "value": "={{ $json.primaryKeyword }}" },
+            { "name": "num", "value": "10" }
+          ]
+        },
+        "options": {
+          "response": { "response": { "neverError": true } }
+        }
+      },
+      "id": "serper-search",
+      "name": "Serper - SERP + PAA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge all keyword research data\nconst items = $input.all();\n\nfunction extractText(response) {\n  if (!response) return '';\n  if (typeof response === 'string') return response;\n  if (response.text) return response.text;\n  if (response.output) return typeof response.output === 'string' ? response.output : JSON.stringify(response.output);\n  if (Array.isArray(response)) return JSON.stringify(response);\n  return JSON.stringify(response);\n}\n\n// Parse autocomplete results\nlet autoKeywords = [];\nlet autoQuestions = [];\ntry {\n  const kwData = items[0]?.json;\n  if (Array.isArray(kwData) && kwData[1]) autoKeywords = kwData[1];\n  else if (kwData?.data && Array.isArray(kwData.data)) autoKeywords = kwData.data;\n} catch(e) {}\ntry {\n  const qData = items[1]?.json;\n  if (Array.isArray(qData) && qData[1]) autoQuestions = qData[1];\n  else if (qData?.data && Array.isArray(qData.data)) autoQuestions = qData.data;\n} catch(e) {}\n\n// Parse Serper results\nlet serpResults = {};\ntry {\n  serpResults = items[2]?.json || {};\n} catch(e) {}\n\nconst paa = (serpResults.peopleAlsoAsk || []).map(p => p.question).join('\\n');\nconst relatedSearches = (serpResults.relatedSearches || []).map(r => r.query).join('\\n');\nconst organicTitles = (serpResults.organic || []).slice(0, 5).map(o => `${o.title} - ${o.link}`).join('\\n');\nconst featuredSnippet = serpResults.answerBox ? `${serpResults.answerBox.title}: ${serpResults.answerBox.snippet}` : 'None';\nconst knowledgeGraph = serpResults.knowledgeGraph ? JSON.stringify(serpResults.knowledgeGraph) : 'None';\n\n// Load dedup history\nconst staticData = $getWorkflowStaticData('global');\nconst history = staticData.contentHistory || [];\nconst usedTitles = history.slice(-4).map(h => h.title);\n\nconst config = items[0]?.json || {};\n\nreturn [{\n  json: {\n    primaryKeyword: config.primaryKeyword || items[0]?.json?.primaryKeyword,\n    questionQuery: config.questionQuery || '',\n    articleStructure: config.articleStructure || 'deep-dive',\n    autocompleteSuggestions: (Array.isArray(autoKeywords) ? autoKeywords : []).join('\\n'),\n    questionSuggestions: (Array.isArray(autoQuestions) ? autoQuestions : []).join('\\n'),\n    peopleAlsoAsk: paa,\n    relatedSearches,\n    organicResults: organicTitles,\n    featuredSnippet,\n    knowledgeGraph,\n    usedTitles: usedTitles.join('\\n'),\n    config: items[0]?.json || {}\n  }\n}];"
+      },
+      "id": "merge-keyword-data",
+      "name": "Merge Keyword Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 420]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1",
+        "messages": {
+          "values": [
+            {
+              "content": "You are an expert AEO (Answer Engine Optimization) strategist for SkynetJoe, an AI automation agency. Analyze the following keyword research data and return a JSON content strategy.\n\nPRIMARY KEYWORD: {{ $json.primaryKeyword }}\nQUESTION QUERY: {{ $json.questionQuery }}\nARTICLE STRUCTURE: {{ $json.articleStructure }}\n\nAUTOCOMPLETE SUGGESTIONS:\n{{ $json.autocompleteSuggestions }}\n\nQUESTION SUGGESTIONS:\n{{ $json.questionSuggestions }}\n\nPEOPLE ALSO ASK:\n{{ $json.peopleAlsoAsk }}\n\nRELATED SEARCHES:\n{{ $json.relatedSearches }}\n\nTOP ORGANIC RESULTS:\n{{ $json.organicResults }}\n\nFEATURED SNIPPET:\n{{ $json.featuredSnippet }}\n\nPREVIOUSLY USED TITLES (DO NOT REPEAT):\n{{ $json.usedTitles }}\n\nSKYNETJOE SERVICES: AI Chatbot Development, Workflow Automation (n8n), Web Development, Social Media Automation, AI Video Editing, Lead Generation, AEO/Data Analytics, GoHighLevel Automation, Custom AI Agents\n\nReturn ONLY valid JSON with this structure:\n{\n  \"primaryKeyword\": \"chosen primary keyword\",\n  \"secondaryKeywords\": [\"kw1\", \"kw2\", \"kw3\"],\n  \"longTailKeywords\": [\"long tail 1\", \"long tail 2\"],\n  \"targetQuestions\": [\"question 1\", \"question 2\", \"question 3\"],\n  \"articleTitle\": \"AEO-optimized title (include year, specific, under 65 chars)\",\n  \"articleAngle\": \"unique angle description\",\n  \"contentBrief\": \"2-3 sentence brief for the article\",\n  \"aeoStrategy\": {\n    \"directAnswer\": \"The 1-2 sentence answer AI would extract\",\n    \"schemaTypes\": [\"FAQPage\", \"Article\", \"HowTo\"],\n    \"comparisonOpportunity\": \"what to compare if applicable\"\n  },\n  \"competitorInsights\": \"what competitors are missing that we can cover\",\n  \"linkedinPostAngle\": \"how to repurpose this as a LinkedIn post\"\n}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.6
+        }
+      },
+      "id": "gpt-keyword-strategy",
+      "name": "GPT-4.1 - Keyword Strategy",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [1320, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse GPT strategy response\nconst items = $input.all();\n\nfunction extractText(response) {\n  if (!response) return '';\n  if (typeof response === 'string') return response;\n  if (response.text) return response.text;\n  if (response.message?.content) return response.message.content;\n  if (response.output) return typeof response.output === 'string' ? response.output : JSON.stringify(response.output);\n  return JSON.stringify(response);\n}\n\nconst raw = extractText(items[0]?.json);\n\n// Try to extract JSON from response\nlet strategy;\ntry {\n  // Remove markdown code fences if present\n  const cleaned = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  strategy = JSON.parse(cleaned);\n} catch(e) {\n  // Fallback: try to find JSON in the text\n  const jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    try {\n      strategy = JSON.parse(jsonMatch[0]);\n    } catch(e2) {\n      strategy = {\n        primaryKeyword: items[0]?.json?.primaryKeyword || 'AI automation',\n        articleTitle: 'AI Automation Guide for Businesses 2026',\n        articleAngle: 'comprehensive guide',\n        contentBrief: 'A guide to AI automation for businesses',\n        targetQuestions: ['What is AI automation?'],\n        secondaryKeywords: [],\n        longTailKeywords: [],\n        aeoStrategy: { directAnswer: '', schemaTypes: ['Article'], comparisonOpportunity: '' },\n        competitorInsights: '',\n        linkedinPostAngle: ''\n      };\n    }\n  }\n}\n\nreturn [{ json: { ...strategy, config: items[0]?.json?.config || {} } }];"
+      },
+      "id": "parse-strategy",
+      "name": "Parse Strategy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1540, 420]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "feed1", "value": "https://techcrunch.com/category/artificial-intelligence/feed/" },
+            { "name": "feed2", "value": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml" },
+            { "name": "feed3", "value": "https://blog.n8n.io/rss/" },
+            { "name": "feed4", "value": "https://openai.com/blog/rss.xml" },
+            { "name": "feed5", "value": "https://www.anthropic.com/rss.xml" },
+            { "name": "feed6", "value": "https://feeds.feedburner.com/venturebeat/SZYF" },
+            { "name": "feed7", "value": "https://www.artificialintelligence-news.com/feed/" },
+            { "name": "feed8", "value": "https://www.marktechpost.com/feed/" }
+          ]
+        }
+      },
+      "id": "rss-sources",
+      "name": "RSS Feed Sources",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1760, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1",
+        "messages": {
+          "values": [
+            {
+              "content": "You are an expert AEO content writer for SkynetJoe, an AI automation agency (www.skynetjoe.com) founded by Waseem Nasir.\n\nWrite a 800-1000 word HTML article optimized for Answer Engine Optimization (AEO).\n\nKEYWORD STRATEGY:\n- Primary: {{ $json.primaryKeyword }}\n- Secondary: {{ JSON.stringify($json.secondaryKeywords) }}\n- Target Questions: {{ JSON.stringify($json.targetQuestions) }}\n\nARTICLE TITLE: {{ $json.articleTitle }}\nANGLE: {{ $json.articleAngle }}\nBRIEF: {{ $json.contentBrief }}\nSTRUCTURE: {{ $json.config.articleStructure || 'deep-dive' }}\n\nAEO RULES:\n1. EVERY H2/H3 heading must be a real question people search (from targetQuestions)\n2. Every section MUST open with a 1-2 sentence DIRECT ANSWER that AI can extract\n3. Include at least 1 specific statistic or data point per section\n4. Include comparison tables where relevant\n5. Use bulleted lists for key points\n6. Write like The Information or Ars Technica — authoritative, specific, no fluff\n7. NO corporate buzzwords: leverage, synergy, cutting-edge, game-changer, revolutionize\n8. Author: Waseem Nasir, Founder of SkynetJoe\n9. Include internal links to skynetjoe.com service pages where natural\n10. End with a FAQ section (3-5 questions with concise answers)\n\nHTML FORMAT:\n- Use semantic HTML: <article>, <section>, <h2>, <h3>, <p>, <ul>, <li>, <table>\n- Include a <table> comparison if the topic allows\n- Add data attributes for schema: data-schema-type=\"FAQPage\" on FAQ section\n- Clean, CMS-ready HTML (no inline styles except tables)\n\nAfter the HTML, add a delimiter |||META||| followed by JSON metadata:\n{\n  \"title\": \"article title\",\n  \"slug\": \"url-slug\",\n  \"metaDescription\": \"155 char meta description\",\n  \"primaryKeyword\": \"keyword\",\n  \"wordCount\": 900,\n  \"aeoScore\": 0,\n  \"schemaTypes\": [\"Article\", \"FAQPage\"]\n}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 4096
+        }
+      },
+      "id": "gpt-write-article",
+      "name": "GPT-4.1 - Write Article",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [1980, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract article HTML and metadata\nconst items = $input.all();\n\nfunction extractText(response) {\n  if (!response) return '';\n  if (typeof response === 'string') return response;\n  if (response.text) return response.text;\n  if (response.message?.content) return response.message.content;\n  if (response.output) return typeof response.output === 'string' ? response.output : JSON.stringify(response.output);\n  return JSON.stringify(response);\n}\n\nconst raw = extractText(items[0]?.json);\nconst parts = raw.split('|||META|||');\n\nlet articleHtml = (parts[0] || '').replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nlet metadata = {};\n\ntry {\n  const metaRaw = (parts[1] || '').replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  const jsonMatch = metaRaw.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) metadata = JSON.parse(jsonMatch[0]);\n} catch(e) {\n  metadata = {\n    title: items[0]?.json?.articleTitle || 'Article',\n    slug: 'article-' + Date.now(),\n    metaDescription: '',\n    primaryKeyword: items[0]?.json?.primaryKeyword || '',\n    wordCount: articleHtml.split(/\\s+/).length,\n    aeoScore: 0,\n    schemaTypes: ['Article']\n  };\n}\n\nreturn [{\n  json: {\n    articleHtml,\n    metadata,\n    config: items[0]?.json?.config || {},\n    strategy: items[0]?.json || {}\n  }\n}];"
+      },
+      "id": "extract-article",
+      "name": "Extract Article",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2200, 420]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1",
+        "messages": {
+          "values": [
+            {
+              "content": "You are an AEO Editor. Score and optimize this article for Answer Engine Optimization.\n\nARTICLE HTML:\n{{ $json.articleHtml }}\n\nSCORING (0-20 points each, 100 total):\n1. DIRECT ANSWERS: Does every section open with a 1-2 sentence extractable answer?\n2. DATA RICHNESS: Are there specific stats, prices, percentages, dates?\n3. QUESTION HEADINGS: Are H2/H3s phrased as real search questions?\n4. KEYWORD INTEGRATION: Is the primary keyword naturally integrated?\n5. FAQ QUALITY: Are FAQ answers specific and factual (not vague)?\n\nRULES:\n- Make SURGICAL edits only — preserve the author's voice\n- Fix any section that scores below 15/20\n- Ensure the first paragraph is a perfect AI-extractable answer\n- Add missing statistics (use realistic industry data)\n- Fix any vague headings to be question-format\n- Check: no buzzwords (leverage, synergy, cutting-edge, game-changer)\n- Check: no dates before 2026\n\nReturn the optimized HTML followed by |||META||| and JSON:\n{\n  \"aeoScore\": 85,\n  \"scores\": {\n    \"directAnswers\": 18,\n    \"dataRichness\": 17,\n    \"questionHeadings\": 16,\n    \"keywordIntegration\": 17,\n    \"faqQuality\": 17\n  },\n  \"optimizations\": [\"list of changes made\"]\n}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.5,
+          "maxTokens": 4096
+        }
+      },
+      "id": "gpt-aeo-editor",
+      "name": "GPT-4.1 - AEO Editor",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [2420, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Finalize article with quality checks\nconst items = $input.all();\n\nfunction extractText(response) {\n  if (!response) return '';\n  if (typeof response === 'string') return response;\n  if (response.text) return response.text;\n  if (response.message?.content) return response.message.content;\n  if (response.output) return typeof response.output === 'string' ? response.output : JSON.stringify(response.output);\n  return JSON.stringify(response);\n}\n\nconst raw = extractText(items[0]?.json);\nconst parts = raw.split('|||META|||');\n\nlet articleHtml = (parts[0] || '').replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nlet editorMeta = {};\n\ntry {\n  const metaRaw = (parts[1] || '').replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  const jsonMatch = metaRaw.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) editorMeta = JSON.parse(jsonMatch[0]);\n} catch(e) {\n  editorMeta = { aeoScore: 70, scores: {}, optimizations: [] };\n}\n\n// Quality gate: check for buzzwords\nconst buzzwords = ['leverage', 'synergy', 'cutting-edge', 'game-changer', 'revolutionize', 'disrupt', 'paradigm', 'holistic', 'robust solution'];\nconst foundBuzzwords = buzzwords.filter(b => articleHtml.toLowerCase().includes(b));\n\n// Date validation\nconst oldDates = articleHtml.match(/\\b(2023|2024|2025)\\b/g) || [];\n\n// Build article URL\nconst config = items[0]?.json?.config || {};\nconst metadata = items[0]?.json?.metadata || {};\nconst slug = metadata.slug || editorMeta.slug || 'article-' + Date.now();\nconst articleUrl = (config.articleBaseUrl || 'https://www.skynetjoe.com/blog/') + slug;\n\nreturn [{\n  json: {\n    articleHtml,\n    articleUrl,\n    slug,\n    aeoScore: editorMeta.aeoScore || 70,\n    scores: editorMeta.scores || {},\n    optimizations: editorMeta.optimizations || [],\n    qualityWarnings: {\n      buzzwordsFound: foundBuzzwords,\n      oldDatesFound: oldDates\n    },\n    metadata: { ...metadata, ...editorMeta },\n    config,\n    strategy: items[0]?.json?.strategy || {}\n  }\n}];"
+      },
+      "id": "finalize-article",
+      "name": "Finalize Article",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2640, 420]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1",
+        "messages": {
+          "values": [
+            {
+              "content": "You are Waseem Nasir, founder of SkynetJoe (www.skynetjoe.com), an AI automation agency.\n\nWrite a LinkedIn post about this topic: {{ $json.strategy.primaryKeyword }}\n\nContext from this week's article: {{ $json.strategy.articleTitle }}\nKey insight: {{ $json.strategy.linkedinPostAngle || $json.strategy.contentBrief }}\n\nRULES:\n- Open with a bold, specific claim or stat (NOT \"I've been thinking about...\")\n- Include 1-2 specific facts/statistics\n- Reference a specific tool, company, or technology\n- End with a question or actionable takeaway\n- Tone: Confident practitioner, not influencer. You BUILD these systems.\n- Length: 150-250 words\n- Include 3-5 relevant hashtags at the end\n- NO emojis, NO corporate buzzwords, NO 'excited to share'\n- Use line breaks between paragraphs (LinkedIn formatting)\n\nSTRUCTURE:\nLine 1: Hook (bold claim or surprising stat)\nLines 2-4: Context (what happened, why it matters)\nLines 5-8: Your take (practitioner perspective, what you've built)\nLine 9: Takeaway or question for the audience\nLine 10: Hashtags\n\nReturn ONLY the post text, nothing else."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1024
+        }
+      },
+      "id": "gpt-linkedin-post",
+      "name": "GPT-4.1 - LinkedIn Post",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [2860, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1",
+        "messages": {
+          "values": [
+            {
+              "content": "You are a video script writer for SkynetJoe, an AI automation agency.\n\nWrite TWO video scripts based on this week's article:\n\nTOPIC: {{ $json.strategy.articleTitle }}\nKEY INSIGHT: {{ $json.strategy.contentBrief }}\nPRIMARY KEYWORD: {{ $json.strategy.primaryKeyword }}\n\n=== SCRIPT 1: SHORT-FORM (Instagram Reel / TikTok / YouTube Short) ===\n- Under 60 seconds\n- Hook in first 3 seconds (pattern interrupt)\n- 1 key insight/stat\n- CTA: \"Follow for more AI automation tips\" or \"Link in bio\"\n\n=== SCRIPT 2: LONG-FORM (YouTube, 3-5 minutes) ===\n- Include timestamps\n- Open with the problem\n- Present the solution with specifics\n- Show/tell what you built\n- B-roll suggestions in [brackets]\n- CTA: Visit skynetjoe.com\n\nFormat each script clearly with labels. Write conversationally — this is spoken word, not an essay."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 2048
+        }
+      },
+      "id": "gpt-video-scripts",
+      "name": "GPT-4.1 - Video Scripts",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [2860, 540]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build all email deliverables\nconst items = $input.all();\n\nfunction extractText(response) {\n  if (!response) return '';\n  if (typeof response === 'string') return response;\n  if (response.text) return response.text;\n  if (response.message?.content) return response.message.content;\n  if (response.output) return typeof response.output === 'string' ? response.output : JSON.stringify(response.output);\n  return JSON.stringify(response);\n}\n\nconst articleData = items[0]?.json || {};\nconst linkedinPost = extractText(items[1]?.json || '').replace(/```/g, '');\nconst videoScripts = extractText(items[2]?.json || '').replace(/```/g, '');\n\nconst config = articleData.config || {};\nconst brandColor = config.brandColor || '#13b973';\nconst brandColorSecondary = config.brandColorSecondary || '#8B5CF6';\nconst brandName = config.brandName || 'SkynetJoe Weekly AI Pulse';\nconst logoUrl = config.logoUrl || '';\nconst websiteUrl = config.websiteUrl || 'https://www.skynetjoe.com';\nconst senderName = config.senderName || 'Waseem Nasir';\n\nfunction wrapEmail(title, content) {\n  return `<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>${title}</title></head><body style=\"margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:680px;margin:0 auto;\"><tr><td style=\"background:linear-gradient(135deg,${brandColor},${brandColorSecondary});padding:32px 24px;text-align:center;\"><h1 style=\"color:#fff;margin:0;font-size:24px;\">${brandName}</h1><p style=\"color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;\">by ${senderName} | <a href=\"${websiteUrl}\" style=\"color:#fff;\">${websiteUrl.replace('https://','')}</a></p></td></tr><tr><td style=\"background:#111;padding:32px 24px;color:#e0e0e0;line-height:1.7;\">${content}</td></tr><tr><td style=\"background:#0a0a0a;padding:24px;text-align:center;color:#666;font-size:12px;\"><p>SkynetJoe | AI Automation Agency</p><p><a href=\"${websiteUrl}\" style=\"color:${brandColor};\">${websiteUrl.replace('https://','')}</a></p></td></tr></table></body></html>`;\n}\n\nfunction toDocBinary(content, filename) {\n  const docHtml = `<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" xmlns=\"http://www.w3.org/TR/REC-html40\"><head><meta charset=\"utf-8\"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;color:#333;}h1,h2,h3{color:#111;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f5f5f5;}</style></head><body>${content}</body></html>`;\n  return {\n    data: Buffer.from(docHtml).toString('base64'),\n    mimeType: 'application/msword',\n    fileName: filename\n  };\n}\n\nconst date = new Date().toISOString().split('T')[0];\nconst title = articleData.metadata?.title || articleData.strategy?.articleTitle || 'AEO Article';\nconst slug = articleData.slug || 'article';\n\n// Email 1: AEO Article\nconst articleEmail = wrapEmail(\n  `AEO Article: ${title}`,\n  `<h2 style=\"color:#fff;margin:0 0 16px;\">This Week's AEO Article</h2><p><strong>Title:</strong> ${title}</p><p><strong>AEO Score:</strong> ${articleData.aeoScore || 'N/A'}/100</p><p><strong>Primary Keyword:</strong> ${articleData.strategy?.primaryKeyword || 'N/A'}</p><p><strong>Article URL:</strong> <a href=\"${articleData.articleUrl}\" style=\"color:${brandColor};\">${articleData.articleUrl}</a></p><hr style=\"border-color:#333;\"><div>${articleData.articleHtml || '<p>Article content not available</p>'}</div>`\n);\n\n// Email 2: LinkedIn Post\nconst linkedinEmail = wrapEmail(\n  'LinkedIn Post Draft',\n  `<h2 style=\"color:#fff;margin:0 0 16px;\">LinkedIn Post - Ready to Publish</h2><p style=\"color:#aaa;\">Copy and paste to LinkedIn, or schedule via Buffer/Hootsuite:</p><hr style=\"border-color:#333;\"><div style=\"background:#1a1a1a;padding:20px;border-radius:8px;border:1px solid #333;white-space:pre-wrap;\">${linkedinPost}</div>`\n);\n\n// Email 3: Video Scripts\nconst videoEmail = wrapEmail(\n  'Video Scripts',\n  `<h2 style=\"color:#fff;margin:0 0 16px;\">Video Scripts</h2><p style=\"color:#aaa;\">Short-form (Reel/TikTok/Short) + Long-form (YouTube):</p><hr style=\"border-color:#333;\"><div style=\"white-space:pre-wrap;\">${videoScripts}</div>`\n);\n\n// Email 4: Instructions\nconst instructionsEmail = wrapEmail(\n  'Publishing Instructions',\n  `<h2 style=\"color:#fff;margin:0 0 16px;\">Publishing Checklist</h2><ol style=\"color:#e0e0e0;\"><li><strong>Blog Article:</strong> Copy the .html attachment → paste into WordPress editor → publish at ${articleData.articleUrl}</li><li><strong>LinkedIn:</strong> Copy the LinkedIn post → paste into LinkedIn → add relevant image → publish</li><li><strong>Video Scripts:</strong> Record short-form with Teleprompter app → upload to Instagram Reels, TikTok, YouTube Shorts. Record long-form for YouTube.</li><li><strong>Schema:</strong> Ensure FAQPage schema is added to the blog post (use Yoast or manual JSON-LD)</li><li><strong>Internal Links:</strong> Add links from this article to 2-3 relevant service pages</li><li><strong>Social Sharing:</strong> Share the blog URL on Twitter, LinkedIn, relevant communities</li></ol><p style=\"color:#aaa;\">AEO Score: ${articleData.aeoScore || 'N/A'}/100 | Run #${articleData.config?.runNumber || '?'} | ${date}</p>`\n);\n\n// Build output items with binary attachments\nconst outputs = [\n  {\n    json: { subject: `[SkynetJoe AEO] Article: ${title}`, html: articleEmail, to: config.recipientEmail },\n    binary: {\n      'article_html': {\n        data: Buffer.from(articleData.articleHtml || '').toString('base64'),\n        mimeType: 'text/html',\n        fileName: `skynetjoe-aeo-article-${date}.html`\n      },\n      'article_doc': toDocBinary(articleData.articleHtml || '', `skynetjoe-aeo-article-${date}.doc`)\n    }\n  },\n  {\n    json: { subject: `[SkynetJoe AEO] LinkedIn Post: ${title}`, html: linkedinEmail, to: config.recipientEmail },\n    binary: {\n      'linkedin_doc': toDocBinary(`<h1>LinkedIn Post</h1><div style=\"white-space:pre-wrap;\">${linkedinPost}</div>`, `skynetjoe-linkedin-post-${date}.doc`)\n    }\n  },\n  {\n    json: { subject: `[SkynetJoe AEO] Video Scripts: ${title}`, html: videoEmail, to: config.recipientEmail },\n    binary: {\n      'scripts_doc': toDocBinary(`<h1>Video Scripts</h1><div style=\"white-space:pre-wrap;\">${videoScripts}</div>`, `skynetjoe-video-scripts-${date}.doc`)\n    }\n  },\n  {\n    json: { subject: `[SkynetJoe AEO] Publishing Instructions`, html: instructionsEmail, to: config.recipientEmail }\n  }\n];\n\nreturn outputs;"
+      },
+      "id": "build-emails",
+      "name": "Build Emails",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3080, 420]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.json?.senderEmail || 'waseem@skynetjoe.com' }}",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {
+          "attachments": "={{ Object.keys($binary || {}).join(',') }}"
+        }
+      },
+      "id": "send-emails",
+      "name": "Send Emails (SMTP)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [3300, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Save content history for dedup\nconst items = $input.all();\nconst staticData = $getWorkflowStaticData('global');\n\nif (!staticData.contentHistory) staticData.contentHistory = [];\n\nconst firstItem = items[0]?.json || {};\nconst config = firstItem.config || {};\nconst strategy = firstItem.strategy || {};\nconst metadata = firstItem.metadata || {};\n\nstaticData.contentHistory.push({\n  date: new Date().toISOString().split('T')[0],\n  keyword: strategy.primaryKeyword || '',\n  title: metadata.title || strategy.articleTitle || '',\n  slug: firstItem.slug || '',\n  angle: strategy.articleAngle || '',\n  articleStructure: config.articleStructure || '',\n  aeoScore: firstItem.aeoScore || 0,\n  storyUrls: [],\n  runNumber: config.runNumber || 0\n});\n\n// Keep last 52 entries\nif (staticData.contentHistory.length > 52) {\n  staticData.contentHistory = staticData.contentHistory.slice(-52);\n}\n\nreturn [{ json: { saved: true, historyLength: staticData.contentHistory.length } }];"
+      },
+      "id": "save-history",
+      "name": "Save Content History",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3520, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// MANUAL: Reset all content history\nconst staticData = $getWorkflowStaticData('global');\nstaticData.contentHistory = [];\nreturn [{ json: { message: 'Content history cleared', timestamp: new Date().toISOString() } }];"
+      },
+      "id": "reset-history",
+      "name": "RESET History (Manual)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3520, 660]
+    }
+  ],
+  "connections": {
+    "Weekly Trigger (Mon 9am)": {
+      "main": [[{ "node": "SkynetJoe Configuration", "type": "main", "index": 0 }]]
+    },
+    "SkynetJoe Configuration": {
+      "main": [[{ "node": "Prepare Keywords", "type": "main", "index": 0 }]]
+    },
+    "Prepare Keywords": {
+      "main": [[
+        { "node": "Autocomplete - Keywords", "type": "main", "index": 0 },
+        { "node": "Autocomplete - Questions", "type": "main", "index": 0 },
+        { "node": "Serper - SERP + PAA", "type": "main", "index": 0 }
+      ]]
+    },
+    "Autocomplete - Keywords": {
+      "main": [[{ "node": "Merge Keyword Data", "type": "main", "index": 0 }]]
+    },
+    "Autocomplete - Questions": {
+      "main": [[{ "node": "Merge Keyword Data", "type": "main", "index": 0 }]]
+    },
+    "Serper - SERP + PAA": {
+      "main": [[{ "node": "Merge Keyword Data", "type": "main", "index": 0 }]]
+    },
+    "Merge Keyword Data": {
+      "main": [[{ "node": "GPT-4.1 - Keyword Strategy", "type": "main", "index": 0 }]]
+    },
+    "GPT-4.1 - Keyword Strategy": {
+      "main": [[{ "node": "Parse Strategy", "type": "main", "index": 0 }]]
+    },
+    "Parse Strategy": {
+      "main": [[
+        { "node": "RSS Feed Sources", "type": "main", "index": 0 },
+        { "node": "GPT-4.1 - Write Article", "type": "main", "index": 0 }
+      ]]
+    },
+    "GPT-4.1 - Write Article": {
+      "main": [[{ "node": "Extract Article", "type": "main", "index": 0 }]]
+    },
+    "Extract Article": {
+      "main": [[{ "node": "GPT-4.1 - AEO Editor", "type": "main", "index": 0 }]]
+    },
+    "GPT-4.1 - AEO Editor": {
+      "main": [[{ "node": "Finalize Article", "type": "main", "index": 0 }]]
+    },
+    "Finalize Article": {
+      "main": [[
+        { "node": "GPT-4.1 - LinkedIn Post", "type": "main", "index": 0 },
+        { "node": "GPT-4.1 - Video Scripts", "type": "main", "index": 0 }
+      ]]
+    },
+    "GPT-4.1 - LinkedIn Post": {
+      "main": [[{ "node": "Build Emails", "type": "main", "index": 0 }]]
+    },
+    "GPT-4.1 - Video Scripts": {
+      "main": [[{ "node": "Build Emails", "type": "main", "index": 0 }]]
+    },
+    "Build Emails": {
+      "main": [[{ "node": "Send Emails (SMTP)", "type": "main", "index": 0 }]]
+    },
+    "Send Emails (SMTP)": {
+      "main": [[{ "node": "Save Content History", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    { "name": "AEO" },
+    { "name": "SkynetJoe" },
+    { "name": "Content Engine" },
+    { "name": "AI Automation" }
+  ]
+}
