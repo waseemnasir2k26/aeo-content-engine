@@ -256,6 +256,25 @@ To reset history: run the `RESET History (Manual)` node by itself.
 
 ---
 
+## Scale It: 4 Premium Tiers
+
+The base engine (v7.0) is just the starting point. We built a full **upsell framework** with 4 pricing tiers so you can turn this into a recurring revenue service for clients.
+
+| Tier | Price | Margin | What It Adds |
+|------|-------|--------|-------------|
+| **Growth** | $1,500/mo | ~95% | DataForSEO keywords, Search Console, performance reports, 2x articles, A/B subject lines |
+| **Accelerate** | $3,000/mo | ~95% | Auto-publish to WordPress/LinkedIn/Twitter, AI images, 4 articles/mo, content calendar |
+| **Dominate** | $5,000/mo | ~82% | SEMrush/Ahrefs, AEO citation monitoring, whitepapers, lead scoring, live dashboard |
+| **Enterprise** | $8-10K/mo | ~75% | 8 articles/mo, strategy calls, SEO audits, backlink outreach, content repurposing, QBRs |
+
+**The ROI pitch:** Your client's average deal is $60-120K/year. At $3K/month, they need less than ONE new client from content to break even. Two clients = 233-567% ROI.
+
+Full proposal with market research, competitor pricing, pitch scripts, and implementation timeline:
+
+**[UPSELL-PROPOSAL.md](UPSELL-PROPOSAL.md)**
+
+---
+
 ## Built By
 
 **[Skynet Labs](https://www.skynetjoe.com)** — AI Automation Agency
