@@ -1,0 +1,388 @@
+{
+  "name": "SkynetJoe Daily AI + Travel Digest v2.0",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 23 * * *"
+            }
+          ]
+        }
+      },
+      "id": "39c0261c-e2c5-46c2-abfe-a745f5a1bb42",
+      "name": "Schedule - Daily 7AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "brandName",
+              "value": "SkynetJoe"
+            },
+            {
+              "name": "founderName",
+              "value": "Waseem Nasir"
+            },
+            {
+              "name": "industry",
+              "value": "AI Automation Agency"
+            },
+            {
+              "name": "targetAudience",
+              "value": "Small Business Owners, Entrepreneurs, Freelancers"
+            },
+            {
+              "name": "tone",
+              "value": "Sharp, data-driven, practitioner voice. No corporate buzzwords."
+            },
+            {
+              "name": "brandColor",
+              "value": "#13b973"
+            },
+            {
+              "name": "secondaryColor",
+              "value": "#8B5CF6"
+            },
+            {
+              "name": "websiteUrl",
+              "value": "https://www.skynetjoe.com"
+            },
+            {
+              "name": "recipientEmail",
+              "value": "waseemhome8@gmail.com"
+            },
+            {
+              "name": "senderEmail",
+              "value": "waseem@skynetjoe.com"
+            },
+            {
+              "name": "travelContext",
+              "value": "Currently traveling ASEAN (Bali, Indonesia). Running AI agency remotely."
+            }
+          ]
+        }
+      },
+      "id": "55cf3a6a-676a-4b13-ab77-7788ac3aad10",
+      "name": "SkynetJoe Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Output 19 RSS feed objects for the SplitInBatches loop\n// NOTE: Shares dedupe history with Weekly AEO workflow via staticData.contentHistory / digestHistory.\n// For persistent cross-workflow dedupe, both workflows reference TOPIC_HISTORY_SHEET_ID (Google Sheet).\n// Dead feed removed per audit 2026-04-17 (was AI-News aggregator flagged dead).\nconst feeds = [{\"url\": \"https://techcrunch.com/category/artificial-intelligence/feed/\", \"category\": \"AI\", \"name\": \"TechCrunch AI\"}, {\"url\": \"https://www.theverge.com/rss/ai-artificial-intelligence/index.xml\", \"category\": \"AI\", \"name\": \"The Verge AI\"}, {\"url\": \"https://feeds.feedburner.com/venturebeat/SZYF\", \"category\": \"AI\", \"name\": \"VentureBeat\"}, {\"url\": \"https://www.technologyreview.com/topic/artificial-intelligence/feed\", \"category\": \"AI\", \"name\": \"MIT Tech Review\"}, {\"url\": \"https://arstechnica.com/feed/\", \"category\": \"AI\", \"name\": \"Ars Technica\"}, {\"url\": \"https://blog.n8n.io/rss/\", \"category\": \"AI\", \"name\": \"n8n Blog\"}, {\"url\": \"https://openai.com/blog/rss.xml\", \"category\": \"AI\", \"name\": \"OpenAI Blog\"}, {\"url\": \"https://www.marktechpost.com/feed/\", \"category\": \"AI\", \"name\": \"MarkTechPost\"}, {\"url\": \"https://hnrss.org/best\", \"category\": \"AI\", \"name\": \"HN Best\"}, {\"url\": \"https://www.nomadicmatt.com/travel-blog/feed/\", \"category\": \"Travel\", \"name\": \"Nomadic Matt\"}, {\"url\": \"https://thepointsguy.com/feed/\", \"category\": \"Travel\", \"name\": \"The Points Guy\"}, {\"url\": \"https://www.skyscanner.net/news/feed/\", \"category\": \"Travel\", \"name\": \"Skyscanner\"}, {\"url\": \"https://www.travelandleisure.com/feeds/all\", \"category\": \"Travel\", \"name\": \"Travel+Leisure\"}, {\"url\": \"https://nomadlist.com/feed\", \"category\": \"Travel\", \"name\": \"NomadList\"}, {\"url\": \"https://smallbiztrends.com/feed\", \"category\": \"Business\", \"name\": \"Small Biz Trends\"}, {\"url\": \"https://www.indiehackers.com/feed.xml\", \"category\": \"Business\", \"name\": \"Indie Hackers\"}, {\"url\": \"https://review.firstround.com/feed.xml\", \"category\": \"Business\", \"name\": \"First Round Review\"}, {\"url\": \"https://www.saastr.com/feed/\", \"category\": \"Business\", \"name\": \"SaaStr\"}, {\"url\": \"https://hbr.org/feed\", \"category\": \"Business\", \"name\": \"HBR\"}];\nreturn feeds.map(f => ({ json: f }));\n"
+      },
+      "id": "37bfd23c-120d-4b89-b1b8-9171fe9fdff0",
+      "name": "RSS Feed URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "673c2bd1-ae93-4d5d-ba63-be8803d9594f",
+      "name": "Split Feeds",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        940,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "505ab875-54f2-4404-8bef-786c60f6b64b",
+      "name": "Fetch Feed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1180,
+        300
+      ],
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidate all RSS responses into a single stories array.\n// Each batch item carries the HTTP response text + original feed metadata.\nconst items = $input.all();\nconst stories = [];\nconst failedFeeds = [];\nconst now = Date.now();\nconst HOURS_48 = 48 * 60 * 60 * 1000;\n\nfor (const item of items) {\n  const feedName = item.json.name || 'Unknown';\n  const feedCategory = item.json.category || 'AI';\n  const raw = item.json.data || item.json.body || '';\n  if (!raw || typeof raw !== 'string' || raw.length < 100) {\n    failedFeeds.push(feedName);\n    continue;\n  }\n  // Simple XML item extraction (works for RSS 2.0 and Atom)\n  const itemRegex = /<item[\\s>][\\s\\S]*?<\\/item>|<entry[\\s>][\\s\\S]*?<\\/entry>/gi;\n  const matches = raw.match(itemRegex) || [];\n  for (const m of matches) {\n    const title = (m.match(/<title[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/title>/s) || [])[1] || '';\n    const link = (m.match(/<link[^>]*href=\"([^\"]*)\"/) || m.match(/<link[^>]*>(.*?)<\\/link>/) || [])[1] || '';\n    const desc = (m.match(/<description[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/description>/s) ||\n                  m.match(/<summary[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/summary>/s) || [])[1] || '';\n    const pubDate = (m.match(/<pubDate[^>]*>(.*?)<\\/pubDate>/) ||\n                     m.match(/<published[^>]*>(.*?)<\\/published>/) ||\n                     m.match(/<updated[^>]*>(.*?)<\\/updated>/) || [])[1] || '';\n    const ts = pubDate ? new Date(pubDate).getTime() : 0;\n    if (ts && (now - ts) > HOURS_48) continue;  // skip old stories\n    const cleanDesc = desc.replace(/<[^>]*>/g, '').substring(0, 300);\n    stories.push({ title: title.trim(), link: link.trim(), description: cleanDesc.trim(), pubDate, source: feedName, category: feedCategory });\n  }\n}\n\n// Deduplicate by URL\nconst seen = new Set();\nconst unique = stories.filter(s => {\n  if (!s.link || seen.has(s.link)) return false;\n  seen.add(s.link);\n  return true;\n});\n\n// Sort by recency (newest first), take top 30\nunique.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));\nconst top30 = unique.slice(0, 30);\n\nreturn [{ json: { stories: top30, totalFetched: items.length, failed: failedFeeds, storyCount: top30.length } }];\n"
+      },
+      "id": "b45d6279-a1e3-4aa3-ad17-538673c3d5f4",
+      "name": "Merge Feed Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are the editorial AI for SkynetJoe, an AI automation agency run by Waseem Nasir. Waseem is currently traveling in ASEAN (Bali, Indonesia) while running his agency remotely.",
+              "role": "system"
+            },
+            {
+              "content": "=Here are today's stories from 20 RSS feeds across AI/Tech, Travel, and Business:\n\n{{ JSON.stringify($json.stories, null, 2) }}\n\nYour tasks:\n1. Pick the TOP 5 most relevant stories for SkynetJoe's audience (small business owners, entrepreneurs wanting AI automation). At least 1 must be travel/nomad related.\n2. For each story, write: a) One-line hook (bold, attention-grabbing) b) 2-3 sentence summary with a specific stat or insight c) Source attribution with link\n3. Generate a TRAVEL HACK OF THE DAY: a practical, specific tip for digital nomads in ASEAN/Bali. Rotate through categories: visa tips, coworking reviews, cost hacks, internet/SIM, food, safety, culture, transportation, accommodation, apps.\n4. Write a LinkedIn-ready text post (150-200 words) based on the #1 story. Bold opening, 1 stat, practitioner voice, ends with question. No emojis. 3 hashtags.\n5. Check against previously featured stories (provided below) and do NOT repeat any.\n\nPreviously featured (last 7 days): {{ JSON.stringify($getWorkflowStaticData('global').digestHistory || []) }}\n\nReturn ONLY valid JSON:\n{\n  \"topStories\": [{\"title\": \"\", \"hook\": \"\", \"summary\": \"\", \"source\": \"\", \"url\": \"\", \"category\": \"\"}],\n  \"travelHack\": {\"category\": \"\", \"title\": \"\", \"tip\": \"\", \"proTip\": \"\"},\n  \"linkedinPost\": \"\",\n  \"digestSubject\": \"\"\n}\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.6,
+          "maxTokens": 2048
+        }
+      },
+      "id": "b28e7075-dec6-43fe-ad40-a67edec67b94",
+      "name": "GPT Curate Daily Digest",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1660,
+        300
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse GPT JSON response for the daily digest\nconst items = $input.all();\nfunction extractText(r) {\n  if (!r) return '';\n  if (typeof r === 'string') return r;\n  if (r.text) return r.text;\n  if (r.message?.content) return r.message.content;\n  if (r.output) return typeof r.output === 'string' ? r.output : JSON.stringify(r.output);\n  return JSON.stringify(r);\n}\nconst raw = extractText(items[0]?.json);\nlet digest;\ntry {\n  const cleaned = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  digest = JSON.parse(cleaned);\n} catch(e) {\n  const jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);\n  try { digest = JSON.parse(jsonMatch[0]); } catch(e2) {\n    digest = { topStories: [], travelHack: {}, linkedinPost: '', digestSubject: 'SkynetJoe Daily AI Digest' };\n  }\n}\nreturn [{ json: digest }];\n"
+      },
+      "id": "7b42a95a-c8fa-41cc-920d-5dc483c8bc9e",
+      "name": "Parse Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build branded HTML email for the daily digest\nconst digest = $input.first().json;\nconst config = $('SkynetJoe Config').first().json;\nconst brandColor = config.brandColor || '#13b973';\nconst secondaryColor = config.secondaryColor || '#8B5CF6';\nconst websiteUrl = config.websiteUrl || 'https://www.skynetjoe.com';\nconst founderName = config.founderName || 'Waseem Nasir';\nconst today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\n\nconst categoryColors = { AI: '#3b82f6', Travel: '#10b981', Business: '#f59e0b' };\n\n// Story cards\nlet storyCards = '';\nfor (const s of (digest.topStories || [])) {\n  const catColor = categoryColors[s.category] || brandColor;\n  storyCards += `\n  <div style=\"background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px;border-left:4px solid ${catColor};\">\n    <span style=\"display:inline-block;background:${catColor};color:#fff;font-size:10px;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;\">${s.category || 'AI'}</span>\n    <h3 style=\"color:#fff;margin:0 0 8px;font-size:16px;line-height:1.4;\">${s.hook || s.title}</h3>\n    <p style=\"color:#ccc;margin:0 0 10px;font-size:14px;line-height:1.6;\">${s.summary}</p>\n    <a href=\"${s.url}\" style=\"color:${brandColor};font-size:13px;text-decoration:none;\">Read more at ${s.source} &rarr;</a>\n  </div>`;\n}\n\n// Travel hack\nconst hack = digest.travelHack || {};\nconst travelSection = hack.title ? `\n<div style=\"background:#0d2818;border-radius:10px;padding:20px;margin:24px 0;border:1px solid ${brandColor};\">\n  <p style=\"font-size:12px;text-transform:uppercase;letter-spacing:2px;color:${brandColor};margin:0 0 8px;\">TRAVEL HACK OF THE DAY &mdash; ${hack.category || 'Bali'}</p>\n  <h3 style=\"color:#fff;margin:0 0 10px;font-size:18px;\">${hack.title}</h3>\n  <p style=\"color:#ccc;margin:0 0 10px;font-size:14px;line-height:1.6;\">${hack.tip}</p>\n  ${hack.proTip ? `<p style=\"color:${brandColor};margin:0;font-size:13px;\"><strong>Pro tip:</strong> ${hack.proTip}</p>` : ''}\n</div>` : '';\n\n// LinkedIn post\nconst linkedinSection = digest.linkedinPost ? `\n<div style=\"margin:24px 0;\">\n  <p style=\"font-size:12px;text-transform:uppercase;letter-spacing:2px;color:${secondaryColor};margin:0 0 12px;\">LINKEDIN POST (COPY-READY)</p>\n  <div style=\"background:#111;border-radius:8px;padding:20px;border:1px solid #333;font-family:monospace;white-space:pre-wrap;color:#e0e0e0;font-size:13px;line-height:1.7;\">${digest.linkedinPost}</div>\n</div>` : '';\n\nconst html = `<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"></head>\n<body style=\"margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;\">\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:640px;margin:0 auto;\">\n  <tr><td style=\"background:linear-gradient(135deg,${secondaryColor},${brandColor});padding:32px 24px;text-align:center;\">\n    <h1 style=\"color:#fff;margin:0 0 4px;font-size:24px;\">SkynetJoe Daily AI + Travel Digest</h1>\n    <p style=\"color:rgba(255,255,255,0.7);margin:0;font-size:13px;\">${today} &bull; by ${founderName}</p>\n  </td></tr>\n  <tr><td style=\"background:#0f0f1a;padding:28px 24px;color:#e0e0e0;\">\n    ${storyCards}\n    ${travelSection}\n    ${linkedinSection}\n  </td></tr>\n  <tr><td style=\"background:#0a0a0a;padding:20px 24px;text-align:center;\">\n    <p style=\"color:#666;font-size:12px;margin:0;\">SkynetJoe &bull; AI Automation Agency &bull; <a href=\"${websiteUrl}\" style=\"color:${brandColor};\">${websiteUrl.replace('https://','')}</a></p>\n  </td></tr>\n</table>\n</body></html>`;\n\nreturn [{ json: { html, subject: digest.digestSubject || 'SkynetJoe Daily AI + Travel Digest', recipientEmail: config.recipientEmail, senderEmail: config.senderEmail } }];\n"
+      },
+      "id": "9b87ecc5-6aa7-49a1-8eef-dbf8d0206b6e",
+      "name": "Build Digest Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.senderEmail }}",
+        "toEmail": "={{ $json.recipientEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "5dfcf3b2-fd2f-4c75-8c27-bcfea93f1774",
+      "name": "Send Digest Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2380,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Save digest history for deduplication\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.digestHistory) staticData.digestHistory = [];\n\nconst digest = $('Parse Digest').first().json;\nconst entry = {\n  date: new Date().toISOString().split('T')[0],\n  storyUrls: (digest.topStories || []).map(s => s.url),\n  travelCategory: digest.travelHack?.category || '',\n};\nstaticData.digestHistory.push(entry);\n\n// Keep last 30 days\nif (staticData.digestHistory.length > 30) {\n  staticData.digestHistory = staticData.digestHistory.slice(-30);\n}\n\nreturn [{ json: { status: 'Daily history saved', entries: staticData.digestHistory.length } }];\n"
+      },
+      "id": "864e91b7-6c4f-4b12-ad9d-847ef13394f3",
+      "name": "Save Daily History",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule - Daily 7AM": {
+      "main": [
+        [
+          {
+            "node": "SkynetJoe Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SkynetJoe Config": {
+      "main": [
+        [
+          {
+            "node": "RSS Feed URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Feed URLs": {
+      "main": [
+        [
+          {
+            "node": "Split Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Feeds": {
+      "main": [
+        [
+          {
+            "node": "Fetch Feed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Feed Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Feed": {
+      "main": [
+        [
+          {
+            "node": "Split Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Feed Data": {
+      "main": [
+        [
+          {
+            "node": "GPT Curate Daily Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Curate Daily Digest": {
+      "main": [
+        [
+          {
+            "node": "Parse Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Digest": {
+      "main": [
+        [
+          {
+            "node": "Build Digest Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Digest Email": {
+      "main": [
+        [
+          {
+            "node": "Send Digest Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Digest Email": {
+      "main": [
+        [
+          {
+            "node": "Save Daily History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8f155d34-3f63-4d79-9b8f-e1b97daf0296",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0bd1a0c9-81c2-4364-9683-030c55348c45"
+  },
+  "id": "0883dbfc-1be9-4804-9d21-91cdd6ac0040",
+  "tags": []
+}

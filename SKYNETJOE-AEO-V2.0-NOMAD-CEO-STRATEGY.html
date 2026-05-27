@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkynetJoe AEO Engine v2.0 — Nomad CEO Edition</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
+    --primary:#13b973;--primary-dim:#0d8a56;--primary-glow:rgba(19,185,115,.15);
+    --secondary:#8B5CF6;--secondary-dim:#7c3aed;--secondary-glow:rgba(139,92,246,.12);
+    --text:#e4e4e7;--text-dim:#a1a1aa;--text-muted:#71717a;
+    --border:#27272a;--border-light:#3f3f46;
+    --success:#22c55e;--warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;
+    --radius:12px;--radius-sm:8px;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.7;
+    min-height:100vh;
+  }
+  ::selection{background:var(--primary);color:#000}
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+
+  /* ===== LAYOUT ===== */
+  .container{max-width:1200px;margin:0 auto;padding:0 24px}
+  section{padding:60px 0;border-bottom:1px solid var(--border)}
+  section:last-of-type{border-bottom:none}
+
+  /* ===== HEADER ===== */
+  .hero{
+    background:linear-gradient(135deg,#0a0a0a 0%,#0f1f17 40%,#130f20 70%,#0a0a0a 100%);
+    padding:80px 0 60px;text-align:center;position:relative;overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+    background:radial-gradient(circle at 30% 50%,rgba(19,185,115,.06) 0%,transparent 50%),
+               radial-gradient(circle at 70% 50%,rgba(139,92,246,.05) 0%,transparent 50%);
+    animation:heroPulse 8s ease-in-out infinite;
+  }
+  @keyframes heroPulse{
+    0%,100%{opacity:.6}50%{opacity:1}
+  }
+  .hero *{position:relative;z-index:1}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:linear-gradient(135deg,var(--primary-glow),var(--secondary-glow));
+    border:1px solid var(--border-light);border-radius:99px;
+    padding:6px 18px;font-size:13px;color:var(--primary);
+    font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px;
+  }
+  .hero-badge .dot{width:8px;height:8px;background:var(--primary);border-radius:50%;animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .hero h1{
+    font-size:clamp(28px,5vw,52px);font-weight:800;
+    background:linear-gradient(135deg,#fff 0%,var(--primary) 50%,var(--secondary) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;line-height:1.2;margin-bottom:16px;
+  }
+  .hero .subtitle{
+    font-size:clamp(14px,2.5vw,20px);color:var(--text-dim);max-width:700px;margin:0 auto 24px;
+    letter-spacing:.3px;
+  }
+  .hero-meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;font-size:13px;color:var(--text-muted)}
+  .hero-meta span{display:flex;align-items:center;gap:6px}
+
+  /* ===== SECTION HEADERS ===== */
+  .section-num{
+    display:inline-block;font-size:12px;font-weight:700;color:var(--primary);
+    background:var(--primary-glow);border:1px solid rgba(19,185,115,.25);
+    border-radius:6px;padding:3px 10px;margin-bottom:12px;letter-spacing:1px;
+    text-transform:uppercase;
+  }
+  h2{
+    font-size:clamp(22px,3.5vw,36px);font-weight:800;margin-bottom:8px;
+    color:#fff;line-height:1.3;
+  }
+  h2 .accent{color:var(--primary)}
+  h2 .accent-purple{color:var(--secondary)}
+  .section-desc{color:var(--text-dim);font-size:16px;margin-bottom:32px;max-width:800px}
+  h3{font-size:20px;font-weight:700;color:#fff;margin:28px 0 14px}
+  h4{font-size:16px;font-weight:600;color:var(--primary);margin:20px 0 10px}
+
+  /* ===== CARDS ===== */
+  .card{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+    padding:28px;margin-bottom:20px;transition:border-color .2s,box-shadow .2s;
+  }
+  .card:hover{border-color:var(--border-light);box-shadow:0 0 30px rgba(19,185,115,.04)}
+  .card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .card-icon{
+    width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:22px;flex-shrink:0;
+  }
+  .card-icon.green{background:var(--primary-glow);border:1px solid rgba(19,185,115,.2)}
+  .card-icon.purple{background:var(--secondary-glow);border:1px solid rgba(139,92,246,.2)}
+  .card-icon.blue{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2)}
+  .card-icon.amber{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2)}
+  .card-title{font-size:18px;font-weight:700;color:#fff}
+  .card-subtitle{font-size:13px;color:var(--text-muted)}
+
+  /* ===== GRID ===== */
+  .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+  .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+
+  /* ===== TABLES ===== */
+  .table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);margin:20px 0}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead{background:var(--bg3)}
+  th{padding:14px 18px;text-align:left;font-weight:700;color:var(--primary);font-size:12px;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border)}
+  td{padding:12px 18px;border-bottom:1px solid var(--border);color:var(--text-dim)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(19,185,115,.03);color:var(--text)}
+  td a{color:var(--primary);text-decoration:none}
+  td a:hover{text-decoration:underline}
+  .cat-badge{
+    display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:600;
+    letter-spacing:.3px;
+  }
+  .cat-ai{background:rgba(19,185,115,.12);color:var(--primary);border:1px solid rgba(19,185,115,.2)}
+  .cat-travel{background:rgba(245,158,11,.12);color:var(--warning);border:1px solid rgba(245,158,11,.2)}
+  .cat-biz{background:rgba(139,92,246,.12);color:var(--secondary);border:1px solid rgba(139,92,246,.2)}
+
+  /* ===== LISTS ===== */
+  ul,ol{padding-left:20px}
+  li{margin-bottom:8px;color:var(--text-dim)}
+  li strong{color:var(--text)}
+  .check-list{list-style:none;padding:0}
+  .check-list li{
+    padding:10px 16px;border-left:3px solid var(--border);margin-bottom:6px;
+    background:var(--bg2);border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    transition:border-color .2s;
+  }
+  .check-list li:hover{border-left-color:var(--primary)}
+  .check-list li::before{content:'';margin-right:0}
+
+  /* ===== CODE / ASCII ===== */
+  .ascii-box{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;overflow-x:auto;font-family:'Cascadia Code','Fira Code','JetBrains Mono',monospace;
+    font-size:13px;line-height:1.8;color:var(--text-dim);position:relative;
+  }
+  .ascii-box .hl-green{color:var(--primary);font-weight:600}
+  .ascii-box .hl-purple{color:var(--secondary);font-weight:600}
+  .ascii-box .hl-amber{color:var(--warning);font-weight:600}
+  .ascii-box .hl-blue{color:var(--info);font-weight:600}
+
+  /* ===== COPY BUTTON ===== */
+  .copy-wrap{position:relative}
+  .copy-btn{
+    position:absolute;top:12px;right:12px;
+    background:var(--bg3);border:1px solid var(--border-light);border-radius:6px;
+    color:var(--text-muted);cursor:pointer;padding:6px 14px;font-size:12px;
+    font-weight:600;display:flex;align-items:center;gap:5px;
+    transition:all .2s;z-index:2;
+  }
+  .copy-btn:hover{background:var(--primary);color:#000;border-color:var(--primary)}
+  .copy-btn.copied{background:var(--success);color:#000;border-color:var(--success)}
+
+  /* ===== PILLAR CARDS ===== */
+  .pillar{position:relative;overflow:hidden}
+  .pillar::after{
+    content:'';position:absolute;top:0;right:0;width:80px;height:80px;
+    border-radius:0 var(--radius) 0 80px;opacity:.06;
+  }
+  .pillar.p1::after{background:var(--primary)}
+  .pillar.p2::after{background:var(--warning)}
+  .pillar.p3::after{background:var(--secondary)}
+  .pillar-pct{
+    font-size:36px;font-weight:900;margin-bottom:4px;
+  }
+  .pillar.p1 .pillar-pct{color:var(--primary)}
+  .pillar.p2 .pillar-pct{color:var(--warning)}
+  .pillar.p3 .pillar-pct{color:var(--secondary)}
+
+  /* ===== TIMELINE ===== */
+  .timeline{position:relative;padding-left:32px}
+  .timeline::before{
+    content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;
+    background:linear-gradient(180deg,var(--primary),var(--secondary));
+  }
+  .timeline-item{position:relative;margin-bottom:24px}
+  .timeline-item::before{
+    content:'';position:absolute;left:-28px;top:6px;width:14px;height:14px;
+    border-radius:50%;background:var(--bg);border:3px solid var(--primary);
+  }
+  .timeline-item:nth-child(even)::before{border-color:var(--secondary)}
+  .timeline-label{
+    font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;
+    letter-spacing:.8px;margin-bottom:4px;
+  }
+  .timeline-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
+  .timeline-desc{font-size:14px;color:var(--text-dim)}
+
+  /* ===== METRIC CARDS ===== */
+  .metric-card{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;text-align:center;
+  }
+  .metric-card .platform{font-size:13px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+  .metric-card .current{font-size:14px;color:var(--text-muted);margin-bottom:4px}
+  .metric-card .target{font-size:32px;font-weight:900;color:var(--primary);margin-bottom:4px}
+  .metric-card .growth{font-size:13px;color:var(--success);font-weight:600}
+
+  /* ===== SCHEDULE GRID ===== */
+  .sched-row{
+    display:grid;grid-template-columns:120px 1fr 1fr 1fr;gap:0;
+    border-bottom:1px solid var(--border);
+  }
+  .sched-row.head{background:var(--bg3);font-weight:700;color:var(--primary);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  .sched-cell{padding:12px 16px;font-size:14px;color:var(--text-dim);border-right:1px solid var(--border)}
+  .sched-cell:last-child{border-right:none}
+  .sched-cell.platform{font-weight:700;color:var(--text)}
+
+  /* ===== CHECKLIST STEPS ===== */
+  .step-list{counter-reset:steps}
+  .step-item{
+    counter-increment:steps;display:flex;gap:16px;padding:16px 20px;
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+    margin-bottom:10px;transition:border-color .2s;
+  }
+  .step-item:hover{border-color:var(--primary)}
+  .step-item::before{
+    content:counter(steps);
+    min-width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+    background:var(--primary-glow);border:1px solid rgba(19,185,115,.3);
+    border-radius:8px;font-size:14px;font-weight:800;color:var(--primary);flex-shrink:0;
+  }
+  .step-text{font-size:15px;color:var(--text-dim);padding-top:4px}
+  .step-text code{
+    background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+    padding:2px 8px;font-size:13px;color:var(--primary);font-family:'Cascadia Code','Fira Code',monospace;
+  }
+
+  /* ===== NAV ===== */
+  .toc{
+    position:fixed;top:50%;right:20px;transform:translateY(-50%);
+    z-index:100;display:flex;flex-direction:column;gap:4px;
+  }
+  .toc a{
+    width:10px;height:10px;border-radius:50%;background:var(--border-light);
+    display:block;transition:all .2s;
+  }
+  .toc a:hover,.toc a.active{background:var(--primary);transform:scale(1.4)}
+  @media(max-width:768px){
+    .toc{display:none}
+    .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+    .sched-row{grid-template-columns:1fr;gap:0}
+    .sched-row.head{display:none}
+    .sched-cell{border-right:none;padding:8px 16px}
+    .sched-cell.platform{background:var(--bg3);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+    section{padding:40px 0}
+    .hero{padding:50px 0 40px}
+    .card{padding:20px}
+  }
+
+  /* ===== BRAND CARD ===== */
+  .brand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:16px}
+  .brand-chip{
+    background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:10px 14px;text-align:center;font-size:13px;font-weight:600;color:var(--text-dim);
+    transition:all .2s;
+  }
+  .brand-chip:hover{border-color:var(--primary);color:var(--primary)}
+
+  /* ===== MISC ===== */
+  .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-light),transparent);margin:32px 0}
+  .tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+  .tag-green{background:var(--primary-glow);color:var(--primary);border:1px solid rgba(19,185,115,.2)}
+  .tag-purple{background:var(--secondary-glow);color:var(--secondary);border:1px solid rgba(139,92,246,.2)}
+  .tag-amber{background:rgba(245,158,11,.1);color:var(--warning);border:1px solid rgba(245,158,11,.2)}
+  .highlight-box{
+    background:linear-gradient(135deg,var(--primary-glow),var(--secondary-glow));
+    border:1px solid var(--border-light);border-radius:var(--radius);
+    padding:24px;margin:20px 0;
+  }
+  .footer{
+    text-align:center;padding:48px 24px;background:var(--bg2);
+    border-top:1px solid var(--border);
+  }
+  .footer a{color:var(--primary);text-decoration:none}
+  .footer a:hover{text-decoration:underline}
+  .footer .links{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .vs-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;
+  }
+  .vs-old{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.2)}
+  .vs-new{background:var(--primary-glow);color:var(--primary);border:1px solid rgba(19,185,115,.2)}
+  .inline-code{
+    background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+    padding:2px 8px;font-size:13px;color:var(--primary);font-family:'Cascadia Code','Fira Code',monospace;
+  }
+  .pitch-template{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;font-style:italic;color:var(--text-dim);position:relative;
+    border-left:4px solid var(--secondary);
+  }
+  .pitch-template::before{
+    content:'\201C';font-size:48px;color:var(--secondary);position:absolute;top:8px;left:16px;
+    font-style:normal;opacity:.3;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV DOTS -->
+<nav class="toc" id="tocNav">
+  <a href="#hero" title="Top"></a>
+  <a href="#summary" title="Executive Summary"></a>
+  <a href="#architecture" title="Architecture"></a>
+  <a href="#feeds" title="RSS Feeds"></a>
+  <a href="#pillars" title="Content Pillars"></a>
+  <a href="#calendar" title="Travel Calendar"></a>
+  <a href="#brand" title="Brand Playbook"></a>
+  <a href="#aeo" title="AEO Checklist"></a>
+  <a href="#metrics" title="Metrics"></a>
+  <a href="#schedule" title="Schedule"></a>
+  <a href="#implement" title="Implementation"></a>
+  <a href="#creds" title="Credentials"></a>
+</nav>
+
+<!-- ============================================================ -->
+<!-- SECTION 1: HEADER / HERO                                     -->
+<!-- ============================================================ -->
+<header class="hero" id="hero">
+  <div class="container">
+    <div class="hero-badge"><span class="dot"></span> v2.0 Nomad CEO Edition</div>
+    <h1>SkynetJoe AEO Engine v2.0<br>Nomad CEO Edition</h1>
+    <p class="subtitle">20 Feeds &bull; Daily Digest &bull; Weekly AEO &bull; Travel Content &bull; Brand Deals</p>
+    <div class="hero-meta">
+      <span>&#x1F4C5; April 15, 2026</span>
+      <span>&#x1F310; ASEAN / Bali, Indonesia</span>
+      <span>&#x26A1; Two-Workflow Architecture</span>
+      <span>&#x1F680; 10x Audience Growth Target</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: EXECUTIVE SUMMARY                                 -->
+<!-- ============================================================ -->
+<section id="summary">
+  <div class="container">
+    <span class="section-num">Section 01</span>
+    <h2><span class="accent">Executive</span> Summary</h2>
+    <p class="section-desc">The AEO Engine v2.0 is a two-workflow n8n system designed to grow SkynetJoe's audience by 10x while Waseem travels ASEAN countries. Every piece of content is generated, scored, and distributed automatically.</p>
+
+    <div class="highlight-box">
+      <h4 style="margin-top:0;color:#fff">&#x1F3AF; Core Architecture</h4>
+      <p style="color:var(--text-dim);margin-bottom:16px">Two independent n8n workflows running 24/7:</p>
+      <div class="grid-2">
+        <div style="display:flex;gap:12px">
+          <div style="min-width:44px;height:44px;border-radius:10px;background:var(--primary-glow);border:1px solid rgba(19,185,115,.2);display:flex;align-items:center;justify-content:center;font-size:20px">&#x2600;</div>
+          <div>
+            <strong style="color:var(--primary)">Daily Digest (7 AM WITA)</strong>
+            <p style="font-size:14px;color:var(--text-dim)">Fetches 20 RSS feeds, GPT-curates top stories, appends travel hack of the day, emails digest.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px">
+          <div style="min-width:44px;height:44px;border-radius:10px;background:var(--secondary-glow);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:20px">&#x1F4C6;</div>
+          <div>
+            <strong style="color:var(--secondary)">Weekly AEO Engine (Mon-Fri)</strong>
+            <p style="font-size:14px;color:var(--text-dim)">5-agent split, each with own Schedule Trigger. State shared via workflow static data. Full content pipeline.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>What's New vs v1.0</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="vs-badge vs-old">&#x2716; v1.0</div>
+        </div>
+        <ul>
+          <li>Single monolithic workflow</li>
+          <li>8 RSS feeds (AI only)</li>
+          <li>Basic article output</li>
+          <li>No travel content integration</li>
+          <li>No brand collaboration system</li>
+          <li>Simple keyword selection</li>
+          <li>No AEO scoring</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="vs-badge vs-new">&#x2714; v2.0 Nomad CEO</div>
+        </div>
+        <ul>
+          <li><strong>5-agent split architecture</strong> (independent chains)</li>
+          <li><strong>20 RSS feeds</strong> (AI + Travel + Business)</li>
+          <li><strong>Travel content pipeline</strong> (ASEAN CEO Series)</li>
+          <li><strong>Brand collaboration pitches</strong> generated weekly</li>
+          <li><strong>ASEAN travel hacks</strong> in daily digest</li>
+          <li><strong>AI + travel hybrid keyword rotation</strong></li>
+          <li><strong>Enhanced AEO scoring</strong> per article</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <h4>&#x1F3C1; Primary Goal</h4>
+    <p>Grow SkynetJoe's audience by <strong style="color:var(--primary);font-size:20px">10x</strong> across all platforms within 90 days, producing high-value AI automation + nomad CEO content entirely on autopilot while Waseem operates from Bali, Indonesia.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: ARCHITECTURE DIAGRAM                              -->
+<!-- ============================================================ -->
+<section id="architecture">
+  <div class="container">
+    <span class="section-num">Section 02</span>
+    <h2><span class="accent">Architecture</span> <span class="accent-purple">Diagram</span></h2>
+    <p class="section-desc">Two independent n8n workflows. The Daily Digest runs every morning. The Weekly Engine runs Mon-Fri, one agent per day, sharing state via workflow static data.</p>
+
+    <h3>&#x2600; Workflow 1: Daily Digest</h3>
+    <div class="copy-wrap">
+      <button class="copy-btn" onclick="copyBlock(this)">&#x1F4CB; Copy</button>
+      <div class="ascii-box" id="diagram-daily">
+<span class="hl-green">DAILY DIGEST (7 AM WITA / 6 PM EST previous day)</span>
+
+  &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+  &#x2502; <span class="hl-amber">Schedule</span>       &#x2502; ──▸ &#x2502; <span class="hl-blue">Fetch 20 Feeds</span>    &#x2502; ──▸ &#x2502; <span class="hl-green">GPT-4.1 Curate</span>  &#x2502; ──▸ &#x2502; <span class="hl-purple">+ Travel Hack</span>   &#x2502; ──▸ &#x2502; <span class="hl-amber">SMTP Email</span>   &#x2502;
+  &#x2502; 7 AM WITA     &#x2502;     &#x2502; RSS Read &#xD7; 20       &#x2502;     &#x2502; Top 8 stories    &#x2502;     &#x2502; Tip of the day   &#x2502;     &#x2502; To Waseem      &#x2502;
+  &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;     &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;     &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;     &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;     &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+</div>
+    </div>
+
+    <h3>&#x1F4C6; Workflow 2: Weekly AEO Engine (5-Agent Split)</h3>
+    <div class="copy-wrap">
+      <button class="copy-btn" onclick="copyBlock(this)">&#x1F4CB; Copy</button>
+      <div class="ascii-box" id="diagram-weekly">
+<span class="hl-green">WEEKLY AEO ENGINE (5 Independent Chains, Mon-Fri)</span>
+<span class="hl-purple">State shared via workflow static data (keyword, research, article, newsletter)</span>
+
+  &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+  &#x2502;                                                                             &#x2502;
+  &#x2502;  <span class="hl-amber">MON</span> &#x2500;&#x2500; Keyword Strategy Agent                                             &#x2502;
+  &#x2502;       Schedule Trigger (Mon 6 AM WITA)                                       &#x2502;
+  &#x2502;       &#x2192; GPT-4.1: Pick keyword (AI + travel hybrid rotation)                  &#x2502;
+  &#x2502;       &#x2192; Serper: SERP analysis + PAA extraction                               &#x2502;
+  &#x2502;       &#x2192; Save to static data: { keyword, serp_data, paa_questions }           &#x2502;
+  &#x2502;                                                                             &#x2502;
+  &#x2502;  <span class="hl-blue">TUE</span> &#x2500;&#x2500; Deep Research Agent                                                &#x2502;
+  &#x2502;       Schedule Trigger (Tue 6 AM WITA)                                       &#x2502;
+  &#x2502;       &#x2192; Fetch 20 RSS feeds                                                   &#x2502;
+  &#x2502;       &#x2192; Gemini 2.5 Flash: Deep analysis against keyword                      &#x2502;
+  &#x2502;       &#x2192; Save to static data: { research_brief, source_citations }            &#x2502;
+  &#x2502;                                                                             &#x2502;
+  &#x2502;  <span class="hl-green">WED</span> &#x2500;&#x2500; AEO Article Agent + Email 1                                        &#x2502;
+  &#x2502;       Schedule Trigger (Wed 6 AM WITA)                                       &#x2502;
+  &#x2502;       &#x2192; Read keyword + research from static data                             &#x2502;
+  &#x2502;       &#x2192; GPT-4.1: Generate 2,500+ word AEO article                            &#x2502;
+  &#x2502;       &#x2192; AEO Score: Schema, FAQ, entities, freshness                          &#x2502;
+  &#x2502;       &#x2192; Email article to Waseem (drip email 1)                                &#x2502;
+  &#x2502;                                                                             &#x2502;
+  &#x2502;  <span class="hl-purple">THU</span> &#x2500;&#x2500; Newsletter Agent + "Nomad CEO Corner" + Email 2                     &#x2502;
+  &#x2502;       Schedule Trigger (Thu 6 AM WITA)                                       &#x2502;
+  &#x2502;       &#x2192; Read article from static data                                        &#x2502;
+  &#x2502;       &#x2192; GPT-4.1: Rewrite as newsletter (casual tone, travel hooks)           &#x2502;
+  &#x2502;       &#x2192; Append "Nomad CEO Corner" (travel tip + revenue update)               &#x2502;
+  &#x2502;       &#x2192; Email newsletter to Waseem (drip email 2)                             &#x2502;
+  &#x2502;                                                                             &#x2502;
+  &#x2502;  <span class="hl-amber">FRI</span> &#x2500;&#x2500; Video Scripts + Brand Collab Pitch + Emails 3 &amp; 4                   &#x2502;
+  &#x2502;       Schedule Trigger (Fri 6 AM WITA)                                       &#x2502;
+  &#x2502;       &#x2192; Read article + newsletter from static data                           &#x2502;
+  &#x2502;       &#x2192; GPT-4.1: 3 video scripts (YouTube long, YT Short, IG Reel)          &#x2502;
+  &#x2502;       &#x2192; GPT-4.1: Brand collab pitch (personalized to week's topic)           &#x2502;
+  &#x2502;       &#x2192; Email scripts (drip email 3) + pitch (drip email 4)                  &#x2502;
+  &#x2502;       &#x2192; Clear static data for next week                                      &#x2502;
+  &#x2502;                                                                             &#x2502;
+  &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: 20 RSS FEEDS TABLE                                -->
+<!-- ============================================================ -->
+<section id="feeds">
+  <div class="container">
+    <span class="section-num">Section 03</span>
+    <h2><span class="accent">20 RSS</span> Feeds</h2>
+    <p class="section-desc">Curated feed mix across AI/Tech, Travel/Nomad, and Business/Growth verticals. Each feed is fetched daily for the digest and weekly for deep research.</p>
+
+    <div class="copy-wrap">
+      <button class="copy-btn" onclick="copyBlock(this)">&#x1F4CB; Copy</button>
+      <div class="table-wrap" id="feeds-table">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Feed Name</th>
+              <th>URL</th>
+              <th>Category</th>
+              <th>Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- AI/TECH -->
+            <tr>
+              <td>1</td>
+              <td><strong>TechCrunch AI</strong></td>
+              <td><a href="https://techcrunch.com/category/artificial-intelligence/feed/" target="_blank">techcrunch.com/.../feed/</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Top-tier AI startup news, funding rounds, product launches</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>The Verge AI</strong></td>
+              <td><a href="https://www.theverge.com/rss/ai-artificial-intelligence/index.xml" target="_blank">theverge.com/.../index.xml</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Consumer AI coverage, product reviews, industry analysis</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>VentureBeat</strong></td>
+              <td><a href="https://venturebeat.com/feed/" target="_blank">venturebeat.com/feed/</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Enterprise AI, deep tech analysis, market trends</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>MIT Technology Review</strong></td>
+              <td><a href="https://www.technologyreview.com/feed/" target="_blank">technologyreview.com/feed/</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Academic-grade AI research breakdowns, long-form analysis</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Ars Technica</strong></td>
+              <td><a href="https://feeds.arstechnica.com/arstechnica/technology-lab" target="_blank">feeds.arstechnica.com/...</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Technical deep-dives, infrastructure, developer tooling</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>n8n Blog</strong></td>
+              <td><a href="https://blog.n8n.io/rss/" target="_blank">blog.n8n.io/rss/</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Core platform updates, automation tutorials, integration news</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>OpenAI Blog</strong></td>
+              <td><a href="https://openai.com/blog/rss.xml" target="_blank">openai.com/blog/rss.xml</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>First-party model updates, API changes, research papers</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>MarkTechPost</strong></td>
+              <td><a href="https://www.marktechpost.com/feed/" target="_blank">marktechpost.com/feed/</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>AI/ML paper summaries, practical implementations</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><strong>Hacker News Best</strong></td>
+              <td><a href="https://hnrss.org/best" target="_blank">hnrss.org/best</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Community-curated top tech stories, early signal detection</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><strong>AI News</strong></td>
+              <td><a href="https://artificialintelligence-news.com/feed/" target="_blank">artificialintelligence-news.com/...</a></td>
+              <td><span class="cat-badge cat-ai">AI / Tech</span></td>
+              <td>Pure AI industry coverage, global perspective</td>
+            </tr>
+            <!-- TRAVEL/NOMAD -->
+            <tr>
+              <td>11</td>
+              <td><strong>Nomadic Matt</strong></td>
+              <td><a href="https://www.nomadicmatt.com/travel-blog/feed/" target="_blank">nomadicmatt.com/.../feed/</a></td>
+              <td><span class="cat-badge cat-travel">Travel / Nomad</span></td>
+              <td>Budget travel authority, destination guides, nomad tips</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><strong>The Points Guy</strong></td>
+              <td><a href="https://thepointsguy.com/feed/" target="_blank">thepointsguy.com/feed/</a></td>
+              <td><span class="cat-badge cat-travel">Travel / Nomad</span></td>
+              <td>Flight deals, credit card points optimization, lounge reviews</td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><strong>Skyscanner News</strong></td>
+              <td><a href="https://www.skyscanner.net/news/feed" target="_blank">skyscanner.net/news/feed</a></td>
+              <td><span class="cat-badge cat-travel">Travel / Nomad</span></td>
+              <td>Flight price trends, new routes, travel industry insights</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td><strong>Travel + Leisure</strong></td>
+              <td><a href="https://www.travelandleisure.com/feeds/all" target="_blank">travelandleisure.com/feeds/all</a></td>
+              <td><span class="cat-badge cat-travel">Travel / Nomad</span></td>
+              <td>Premium travel content, hotel reviews, destination features</td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td><strong>NomadList Blog</strong></td>
+              <td><a href="https://nomadlist.com/blog.rss" target="_blank">nomadlist.com/blog.rss</a></td>
+              <td><span class="cat-badge cat-travel">Travel / Nomad</span></td>
+              <td>Digital nomad data, city rankings, remote work trends</td>
+            </tr>
+            <!-- BUSINESS/GROWTH -->
+            <tr>
+              <td>16</td>
+              <td><strong>Small Biz Trends</strong></td>
+              <td><a href="https://smallbiztrends.com/feed" target="_blank">smallbiztrends.com/feed</a></td>
+              <td><span class="cat-badge cat-biz">Business / Growth</span></td>
+              <td>SMB operations, growth tactics, market data</td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td><strong>Indie Hackers</strong></td>
+              <td><a href="https://www.indiehackers.com/feed.xml" target="_blank">indiehackers.com/feed.xml</a></td>
+              <td><span class="cat-badge cat-biz">Business / Growth</span></td>
+              <td>Bootstrapped founder stories, revenue milestones, tactics</td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td><strong>First Round Review</strong></td>
+              <td><a href="https://review.firstround.com/feed.xml" target="_blank">review.firstround.com/feed.xml</a></td>
+              <td><span class="cat-badge cat-biz">Business / Growth</span></td>
+              <td>World-class operational playbooks from top founders/CTOs</td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td><strong>SaaStr</strong></td>
+              <td><a href="https://www.saastr.com/feed/" target="_blank">saastr.com/feed/</a></td>
+              <td><span class="cat-badge cat-biz">Business / Growth</span></td>
+              <td>SaaS growth metrics, pricing, sales strategies</td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td><strong>HBR Digital</strong></td>
+              <td><a href="https://hbr.org/feed" target="_blank">hbr.org/feed</a></td>
+              <td><span class="cat-badge cat-biz">Business / Growth</span></td>
+              <td>Executive strategy, leadership, digital transformation</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px">
+      <div class="tag tag-green">10 AI / Tech Feeds</div>
+      <div class="tag tag-amber">5 Travel / Nomad Feeds</div>
+      <div class="tag tag-purple">5 Business / Growth Feeds</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: CONTENT PILLARS                                   -->
+<!-- ============================================================ -->
+<section id="pillars">
+  <div class="container">
+    <span class="section-num">Section 04</span>
+    <h2><span class="accent">Content</span> <span class="accent-purple">Pillars</span></h2>
+    <p class="section-desc">Three strategic pillars with defined allocation percentages. Every piece of content maps to exactly one pillar and contributes to AEO authority.</p>
+
+    <div class="grid-3">
+      <!-- PILLAR 1 -->
+      <div class="card pillar p1">
+        <div class="pillar-pct">60%</div>
+        <h3 style="margin-top:4px;color:var(--primary)">&#x1F916; Pillar 1: AI Automation Authority</h3>
+        <ul>
+          <li><strong>AI implementation guides</strong> for SMBs (step-by-step, tool-specific)</li>
+          <li><strong>n8n workflow tutorials</strong> with screenshots and JSON exports</li>
+          <li><strong>ChatGPT / AI employee case studies</strong> with before/after ROI</li>
+          <li><strong>Tool comparisons and ROI breakdowns</strong> (GPT-4.1 vs Claude vs Gemini)</li>
+          <li><strong>AEO-optimized how-to articles</strong> targeting Perplexity/ChatGPT citations</li>
+        </ul>
+      </div>
+
+      <!-- PILLAR 2 -->
+      <div class="card pillar p2">
+        <div class="pillar-pct">25%</div>
+        <h3 style="margin-top:4px;color:var(--warning)">&#x1F334; Pillar 2: Nomad CEO Lifestyle</h3>
+        <ul>
+          <li><strong>"Running a 6-figure agency from Bali"</strong> series</li>
+          <li><strong>Coworking space reviews:</strong> Dojo, Outpost, Hubud, Tropical Nomad</li>
+          <li><strong>Cost breakdowns:</strong> Bali on $1,200/mo vs $3,000/mo</li>
+          <li><strong>Day-in-my-life</strong> content with revenue dashboards</li>
+          <li><strong>Digital nomad visa guides:</strong> E33G, B211A</li>
+          <li><strong>Internet/SIM tips:</strong> Telkomsel eSIM, 21GB/$15</li>
+          <li><strong>Safety tips</strong> and scooter rentals</li>
+        </ul>
+      </div>
+
+      <!-- PILLAR 3 -->
+      <div class="card pillar p3">
+        <div class="pillar-pct">15%</div>
+        <h3 style="margin-top:4px;color:var(--secondary)">&#x1F4C8; Pillar 3: Brand &amp; Growth</h3>
+        <ul>
+          <li><strong>Brand collaboration case studies</strong> with results</li>
+          <li><strong>Behind-the-scenes:</strong> landing clients while traveling</li>
+          <li><strong>LinkedIn growth tactics:</strong> document posts = 7% engagement</li>
+          <li><strong>Instagram strategy:</strong> Reels for reach, Carousels for engagement</li>
+          <li><strong>Personal branding tips</strong> for tech founders</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: TRAVEL CONTENT CALENDAR                           -->
+<!-- ============================================================ -->
+<section id="calendar">
+  <div class="container">
+    <span class="section-num">Section 05</span>
+    <h2><span class="accent">ASEAN CEO</span> Series &mdash; <span class="accent-purple">12-Week Calendar</span></h2>
+    <p class="section-desc">A phased travel content calendar that builds narrative momentum: establish the Bali foundation, expand across ASEAN, then consolidate the brand.</p>
+
+    <!-- PHASE 1 -->
+    <h3>&#x1F3D7; Phase 1: Bali Foundation (Weeks 1-4)</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-label">Week 1</div>
+        <div class="timeline-title">"I moved my AI agency to Bali. Here's what happened to revenue."</div>
+        <div class="timeline-desc">The origin story. Before/after revenue data, decision process, first impressions. Hook: vulnerability + data.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 2</div>
+        <div class="timeline-title">"Every coworking space in Canggu, ranked ($8-$20/day)"</div>
+        <div class="timeline-desc">Dojo Bali, Outpost, Hubud, Tropical Nomad, B-Work. WiFi speeds, vibes, pricing, power outlets, community quality.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 3</div>
+        <div class="timeline-title">"The $1,200/month CEO lifestyle in Bali (full breakdown)"</div>
+        <div class="timeline-desc">Rent, food, transport, coworking, insurance, SIM, visa. Budget vs premium tiers side by side.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 4</div>
+        <div class="timeline-title">"How I close $10K deals from a rice field cafe"</div>
+        <div class="timeline-desc">Sales process, timezone management, trust-building tactics, tools used (Zoom, Loom, Cal.com).</div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <h3>&#x1F30F; Phase 2: ASEAN Expansion (Weeks 5-8)</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-label">Week 5</div>
+        <div class="timeline-title">"Canggu vs Ubud vs Uluwatu for remote workers"</div>
+        <div class="timeline-desc">Three distinct Bali zones compared: internet, cost, vibe, food, community, safety. Data-driven ranking.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 6</div>
+        <div class="timeline-title">"Digital nomad visa: everything you need to know (2026)"</div>
+        <div class="timeline-desc">Indonesia E33G digital nomad visa, B211A, VOA extensions. Requirements, costs, processing times, gotchas.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 7</div>
+        <div class="timeline-title">"My AI automation workflow while traveling (timezone hacks)"</div>
+        <div class="timeline-desc">n8n workflows that run while sleeping, async communication, client timezone management, GHL auto-posting.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 8</div>
+        <div class="timeline-title">"Best apps for ASEAN travel (eSIM, transport, food, banking)"</div>
+        <div class="timeline-desc">Airalo/Holafly eSIM, Grab/Gojek, Wise/Revolut, Google Maps offline, WhatsApp Business. Real usage data.</div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <h3>&#x1F451; Phase 3: Brand Building (Weeks 9-12)</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-label">Week 9</div>
+        <div class="timeline-title">"How I got my first brand deal as a tech founder"</div>
+        <div class="timeline-desc">Outreach process, media kit, negotiation, deliverables, payment. Real numbers, real emails (redacted).</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 10</div>
+        <div class="timeline-title">"Building a personal brand while traveling (face > logo)"</div>
+        <div class="timeline-desc">Why personal branding beats corporate branding. Content flywheel, consistency systems, Waseem's face rule.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 11</div>
+        <div class="timeline-title">"The content system that posts while I sleep"</div>
+        <div class="timeline-desc">Full stack revealed: AEO Engine + GHL + n8n + Claude Code. Technical walkthrough for other founders.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">Week 12</div>
+        <div class="timeline-title">"3 months in ASEAN: lessons, revenue, what's next"</div>
+        <div class="timeline-desc">Retrospective. Revenue growth, audience numbers, mistakes, surprises, next destination tease.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: BRAND COLLABORATION PLAYBOOK                      -->
+<!-- ============================================================ -->
+<section id="brand">
+  <div class="container">
+    <span class="section-num">Section 06</span>
+    <h2><span class="accent">Brand Collaboration</span> <span class="accent-purple">Playbook</span></h2>
+    <p class="section-desc">Waseem's unique angle: "AI agency founder documenting the future of remote work" &mdash; NOT a travel blogger. This commands premium rates from B2B and SaaS brands.</p>
+
+    <div class="grid-2">
+      <!-- Follower Thresholds -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">&#x1F4CA;</div>
+          <div>
+            <div class="card-title">Follower Tier Pricing</div>
+            <div class="card-subtitle">Current target: Nano &rarr; Micro transition</div>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Tier</th><th>Followers</th><th>IG Post</th><th>Reel</th><th>YouTube</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag tag-green">Nano</span></td><td>1K - 10K</td><td>$100 - $500</td><td>$200 - $1K</td><td>$500 - $2K</td></tr>
+              <tr><td><span class="tag tag-purple">Micro</span></td><td>10K - 50K</td><td>$500 - $1K</td><td>$1K - $3K</td><td>$2K - $5K</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Waseem's Angle -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon purple">&#x1F3AF;</div>
+          <div>
+            <div class="card-title">Waseem's Unique Angle</div>
+            <div class="card-subtitle">Why brands pay premium for tech-founder content</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>High-intent audience:</strong> founders, CTOs, agencies (not backpackers)</li>
+          <li><strong>Authentic use:</strong> actually runs a business with the tools featured</li>
+          <li><strong>Technical credibility:</strong> can demo integrations, not just hold products</li>
+          <li><strong>Cross-platform presence:</strong> LinkedIn (B2B) + IG (visual) + YouTube (depth)</li>
+          <li><strong>Content flywheel:</strong> brand mention lives in AEO articles indexed by AI</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>&#x1F3E2; Target Brands by Category</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4 style="margin-top:0">&#x1F310; VPNs &amp; Security</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">NordVPN</div>
+          <div class="brand-chip">Surfshark</div>
+          <div class="brand-chip">ExpressVPN</div>
+        </div>
+        <h4>&#x1F4F1; eSIM Providers</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">Airalo</div>
+          <div class="brand-chip">Holafly</div>
+          <div class="brand-chip">Nomad eSIM</div>
+        </div>
+        <h4>&#x1F6E1; Travel Insurance</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">SafetyWing</div>
+          <div class="brand-chip">World Nomads</div>
+        </div>
+        <h4>&#x1F4BC; SaaS Tools</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">Notion</div>
+          <div class="brand-chip">Canva</div>
+          <div class="brand-chip">n8n</div>
+          <div class="brand-chip">Cal.com</div>
+        </div>
+      </div>
+      <div class="card">
+        <h4 style="margin-top:0">&#x1F9F3; Luggage &amp; Gear</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">Away</div>
+          <div class="brand-chip">Nomatic</div>
+          <div class="brand-chip">Peak Design</div>
+        </div>
+        <h4>&#x1F4B3; Digital Banking</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">Wise</div>
+          <div class="brand-chip">Revolut</div>
+          <div class="brand-chip">Mercury</div>
+        </div>
+        <h4>&#x1F3E2; Coworking</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">WeWork</div>
+          <div class="brand-chip">Hubud</div>
+          <div class="brand-chip">Dojo Bali</div>
+        </div>
+        <h4>&#x1F310; Hosting</h4>
+        <div class="brand-grid">
+          <div class="brand-chip">Hostinger</div>
+          <div class="brand-chip">Vercel</div>
+          <div class="brand-chip">DigitalOcean</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>&#x1F3AC; 45-90 Second Video Pitch Template</h3>
+    <div class="copy-wrap">
+      <button class="copy-btn" onclick="copyBlock(this)">&#x1F4CB; Copy</button>
+      <div class="pitch-template" id="pitch-template">
+        <p style="padding-left:32px"><strong style="color:var(--secondary)">[0-10s] Hook:</strong> "Hey [Brand], I'm Waseem &mdash; I run an AI automation agency from Bali, Indonesia. I just used [Product] to [specific action] and I want to show you what happened."</p>
+        <br>
+        <p style="padding-left:32px"><strong style="color:var(--secondary)">[10-30s] Demo:</strong> Quick screen recording or B-roll showing actual usage. "Here's me at Dojo Bali, running my n8n workflows through [VPN/tool]. My team is in 3 timezones and this is how we stay connected..."</p>
+        <br>
+        <p style="padding-left:32px"><strong style="color:var(--secondary)">[30-50s] Results:</strong> "Since switching to [Product], I've [specific metric]. My audience of [number] founders and CTOs have been asking about this setup."</p>
+        <br>
+        <p style="padding-left:32px"><strong style="color:var(--secondary)">[50-70s] Proposal:</strong> "I'd love to create a [Reel / YouTube video / LinkedIn post] showing my full nomad CEO toolkit with [Product] featured. My audience is [demographics]. Here's my engagement rate: [X%]."</p>
+        <br>
+        <p style="padding-left:32px"><strong style="color:var(--secondary)">[70-90s] CTA:</strong> "I've attached my media kit. Would love to hop on a 15-minute call this week. What days work for you?"</p>
+      </div>
+    </div>
+
+    <h3>&#x1F4CB; Media Kit Checklist</h3>
+    <div class="grid-2">
+      <ul class="check-list">
+        <li>&#x2713; Professional headshot + Bali lifestyle shots</li>
+        <li>&#x2713; Bio: "AI agency founder, digital nomad, building in public"</li>
+        <li>&#x2713; Platform stats (followers, engagement rate, demographics)</li>
+        <li>&#x2713; Audience breakdown (founders 40%, devs 25%, marketers 20%, other 15%)</li>
+      </ul>
+      <ul class="check-list">
+        <li>&#x2713; Past brand work / testimonials</li>
+        <li>&#x2713; Content examples (top 5 performing posts)</li>
+        <li>&#x2713; Rate card (IG post, Reel, YouTube, LinkedIn, bundle)</li>
+        <li>&#x2713; Website links: skynetjoe.com, waseemnasir.com</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: AEO OPTIMIZATION CHECKLIST                        -->
+<!-- ============================================================ -->
+<section id="aeo">
+  <div class="container">
+    <span class="section-num">Section 07</span>
+    <h2><span class="accent">AEO Optimization</span> Checklist</h2>
+    <p class="section-desc">Answer Engine Optimization ensures SkynetJoe content gets cited by ChatGPT, Perplexity, Google AI Overview, and other AI answer engines. Every article must pass these checks.</p>
+
+    <div class="grid-2">
+      <!-- Schema Markup -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">&#x1F3F7;</div>
+          <div>
+            <div class="card-title">Schema Markup</div>
+            <div class="card-subtitle">Structured data for AI crawlers</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>Person</strong> &mdash; Waseem Nasir entity with sameAs links</li>
+          <li><strong>Organization</strong> &mdash; SkynetJoe / Skynet Labs with logo, URL</li>
+          <li><strong>FAQPage</strong> &mdash; Every article includes 3-5 FAQ questions</li>
+          <li><strong>Article</strong> &mdash; Full article schema with author, datePublished</li>
+          <li><strong>HowTo</strong> &mdash; Step-by-step guides with named steps</li>
+          <li><strong>Service</strong> &mdash; AI automation services with pricing</li>
+        </ul>
+      </div>
+
+      <!-- Entity Authority -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon purple">&#x1F3DB;</div>
+          <div>
+            <div class="card-title">Entity Authority</div>
+            <div class="card-subtitle">Build Waseem Nasir as a recognized entity</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>Wikidata</strong> &mdash; Create/claim Waseem Nasir entry</li>
+          <li><strong>Crunchbase</strong> &mdash; SkynetJoe company profile with funding data</li>
+          <li><strong>Clutch</strong> &mdash; Agency profile with client reviews</li>
+          <li><strong>LinkedIn</strong> &mdash; Consistent name, title, bio across all profiles</li>
+          <li><strong>Google Knowledge Panel</strong> &mdash; Trigger via consistent NAP + mentions</li>
+        </ul>
+      </div>
+
+      <!-- Content Structure -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">&#x1F4DD;</div>
+          <div>
+            <div class="card-title">Content Structure</div>
+            <div class="card-subtitle">Format content for AI extraction</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>Q&amp;A headers</strong> &mdash; H2/H3 as questions matching user queries</li>
+          <li><strong>Direct answers first</strong> &mdash; Lead with the answer, then elaborate</li>
+          <li><strong>Stats per section</strong> &mdash; Every H2 section includes at least 1 data point</li>
+          <li><strong>Concise paragraphs</strong> &mdash; 2-3 sentences max for AI snippet extraction</li>
+          <li><strong>Bold key phrases</strong> &mdash; AI models weight bold text higher</li>
+        </ul>
+      </div>
+
+      <!-- FAQ Optimization -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon amber">&#x2753;</div>
+          <div>
+            <div class="card-title">FAQ Optimization</div>
+            <div class="card-subtitle">Match ChatGPT/Perplexity query patterns</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>Conversational questions</strong> &mdash; "How do I..." not "Implementation of..."</li>
+          <li><strong>Long-tail specificity</strong> &mdash; "best n8n workflow for lead gen" beats "n8n tips"</li>
+          <li><strong>Include comparisons</strong> &mdash; "X vs Y" triggers AI comparison answers</li>
+          <li><strong>Action-oriented</strong> &mdash; Questions that imply a decision or next step</li>
+        </ul>
+      </div>
+
+      <!-- Topical Clusters -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">&#x1F578;</div>
+          <div>
+            <div class="card-title">Topical Clusters</div>
+            <div class="card-subtitle">Build topical authority with interlinked content</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>10-15 articles per cluster</strong> around core expertise areas</li>
+          <li><strong>Pillar page</strong> &mdash; Comprehensive guide (3,000+ words) per cluster</li>
+          <li><strong>Supporting pages</strong> &mdash; Specific subtopics linking back to pillar</li>
+          <li><strong>Internal linking</strong> &mdash; Every article links to 3-5 related pieces</li>
+        </ul>
+      </div>
+
+      <!-- Monitoring -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon purple">&#x1F50D;</div>
+          <div>
+            <div class="card-title">Monitoring &amp; Freshness</div>
+            <div class="card-subtitle">Stay visible in AI answer engines</div>
+          </div>
+        </div>
+        <ul>
+          <li><strong>Weekly brand test</strong> &mdash; Query "Waseem Nasir" and "SkynetJoe" in ChatGPT, Perplexity, Google AI Overview</li>
+          <li><strong>Quarterly updates</strong> &mdash; Refresh cornerstone content with new data</li>
+          <li><strong>Date stamps</strong> &mdash; Always show "Last updated: [date]" on articles</li>
+          <li><strong>Competitor monitoring</strong> &mdash; Track who AI cites for your target keywords</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 9: GROWTH METRICS & TARGETS                          -->
+<!-- ============================================================ -->
+<section id="metrics">
+  <div class="container">
+    <span class="section-num">Section 08</span>
+    <h2><span class="accent">Growth Metrics</span> &amp; <span class="accent-purple">90-Day Targets</span></h2>
+    <p class="section-desc">Aggressive but achievable targets. The combination of daily AI content + travel narrative + personal brand creates compounding growth.</p>
+
+    <div class="grid-4" style="margin-bottom:32px">
+      <div class="metric-card">
+        <div class="platform">LinkedIn</div>
+        <div class="current">Current: ~500</div>
+        <div class="target">5,000</div>
+        <div class="growth">&#x2191; 10x in 90 days</div>
+      </div>
+      <div class="metric-card">
+        <div class="platform">Instagram</div>
+        <div class="current">Current: ~200</div>
+        <div class="target">5,000</div>
+        <div class="growth">&#x2191; 25x in 90 days</div>
+      </div>
+      <div class="metric-card">
+        <div class="platform">YouTube</div>
+        <div class="current">Current: ~50</div>
+        <div class="target">2,000</div>
+        <div class="growth">&#x2191; 40x in 90 days</div>
+      </div>
+      <div class="metric-card">
+        <div class="platform">Newsletter</div>
+        <div class="current">Current: 0</div>
+        <div class="target">1,000</div>
+        <div class="growth">&#x2191; From zero</div>
+      </div>
+      <div class="metric-card" style="grid-column:1/-1;max-width:300px;margin:0 auto">
+        <div class="platform">Website Traffic</div>
+        <div class="current">Current: ~500/mo</div>
+        <div class="target">10K/mo</div>
+        <div class="growth">&#x2191; 20x in 90 days</div>
+      </div>
+    </div>
+
+    <!-- Full table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Platform</th><th>Current (est.)</th><th>30 Days</th><th>60 Days</th><th>90 Days</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>LinkedIn</strong></td><td>500</td><td style="color:var(--primary)">1,200</td><td style="color:var(--primary)">2,500</td><td style="color:var(--success);font-weight:700">5,000</td></tr>
+          <tr><td><strong>Instagram</strong></td><td>200</td><td style="color:var(--primary)">800</td><td style="color:var(--primary)">2,000</td><td style="color:var(--success);font-weight:700">5,000</td></tr>
+          <tr><td><strong>YouTube</strong></td><td>50</td><td style="color:var(--primary)">300</td><td style="color:var(--primary)">800</td><td style="color:var(--success);font-weight:700">2,000</td></tr>
+          <tr><td><strong>Newsletter</strong></td><td>0</td><td style="color:var(--primary)">200</td><td style="color:var(--primary)">500</td><td style="color:var(--success);font-weight:700">1,000</td></tr>
+          <tr><td><strong>Website traffic</strong></td><td>500/mo</td><td style="color:var(--primary)">2K/mo</td><td style="color:var(--primary)">5K/mo</td><td style="color:var(--success);font-weight:700">10K/mo</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>&#x1F3AF; Key Tactics by Platform</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">&#x1F4BC;</div>
+          <div><div class="card-title">LinkedIn</div></div>
+        </div>
+        <ul>
+          <li><strong>Document carousels</strong> &mdash; 7% average engagement rate (vs 2% for text posts)</li>
+          <li><strong>LinkedIn Newsletter</strong> &mdash; Triple notification bypass: in-app + email + push</li>
+          <li><strong>No external links</strong> in posts &mdash; LinkedIn suppresses posts with outbound links</li>
+          <li><strong>Comment-first strategy</strong> &mdash; Comment on 20 posts before publishing daily</li>
+          <li><strong>"I built this" posts</strong> &mdash; Show real work, not thought leadership fluff</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon amber">&#x1F4F7;</div>
+          <div><div class="card-title">Instagram</div></div>
+        </div>
+        <ul>
+          <li><strong>Reels for reach</strong> &mdash; Algorithm pushes Reels to non-followers (explore page)</li>
+          <li><strong>Carousels for saves</strong> &mdash; Save rate is the #1 ranking factor in 2026</li>
+          <li><strong>Caption SEO > hashtags</strong> &mdash; IG search now reads captions like Google</li>
+          <li><strong>Story polls daily</strong> &mdash; Boost engagement signals for algorithm favor</li>
+          <li><strong>ManyChat DM automation</strong> &mdash; "Comment BALI for my cost breakdown" funnels</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">&#x25B6;</div>
+          <div><div class="card-title">YouTube</div></div>
+        </div>
+        <ul>
+          <li><strong>"I tested every X"</strong> format &mdash; High CTR, comparison content ranks well</li>
+          <li><strong>3x/week Shorts</strong> &mdash; Repurpose Reels, travel clips, quick tips</li>
+          <li><strong>Thumbnail formula</strong> &mdash; Face + contrast text + single emoji + dark background</li>
+          <li><strong>End screens</strong> &mdash; Every video links to playlist and subscribe prompt</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon purple">&#x2709;</div>
+          <div><div class="card-title">Newsletter</div></div>
+        </div>
+        <ul>
+          <li><strong>LinkedIn Newsletter</strong> &mdash; Subscribers get notified 3 ways automatically</li>
+          <li><strong>"Nomad CEO Corner"</strong> section &mdash; Personal travel update in every issue</li>
+          <li><strong>Tool of the Week</strong> &mdash; Affiliate opportunity per issue</li>
+          <li><strong>Q&amp;A section</strong> &mdash; Reader questions build community engagement</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10: POSTING SCHEDULE (BALI TIMEZONE)                 -->
+<!-- ============================================================ -->
+<section id="schedule">
+  <div class="container">
+    <span class="section-num">Section 09</span>
+    <h2><span class="accent">Posting Schedule</span> &mdash; <span class="accent-purple">Bali Timezone</span></h2>
+    <p class="section-desc">All content is batch-created during Bali daytime and auto-posted at optimal US timezone windows. Bali (WITA) = UTC+8 = EST+13.</p>
+
+    <div class="highlight-box" style="margin-bottom:32px">
+      <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
+        <div style="text-align:center">
+          <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Bali (WITA)</div>
+          <div style="font-size:28px;font-weight:800;color:var(--primary)">UTC+8</div>
+        </div>
+        <div style="display:flex;align-items:center;font-size:24px;color:var(--text-muted)">=</div>
+        <div style="text-align:center">
+          <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">US Eastern (EST)</div>
+          <div style="font-size:28px;font-weight:800;color:var(--secondary)">UTC-5</div>
+        </div>
+        <div style="display:flex;align-items:center;font-size:24px;color:var(--text-muted)">&#x2192;</div>
+        <div style="text-align:center">
+          <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Offset</div>
+          <div style="font-size:28px;font-weight:800;color:var(--warning)">+13 hrs</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      <div class="sched-row head">
+        <div class="sched-cell">Platform</div>
+        <div class="sched-cell">US Post Time (EST)</div>
+        <div class="sched-cell">Bali Time (WITA)</div>
+        <div class="sched-cell">Method</div>
+      </div>
+      <div class="sched-row">
+        <div class="sched-cell platform">&#x1F4BC; LinkedIn</div>
+        <div class="sched-cell">8:00 AM EST</div>
+        <div class="sched-cell">9:00 PM WITA</div>
+        <div class="sched-cell">Batch create daytime, auto-post evening via GHL</div>
+      </div>
+      <div class="sched-row">
+        <div class="sched-cell platform">&#x1F4F7; Instagram</div>
+        <div class="sched-cell">12:00 PM EST</div>
+        <div class="sched-cell">1:00 AM WITA (next day)</div>
+        <div class="sched-cell">Schedule via GHL, posts while sleeping</div>
+      </div>
+      <div class="sched-row">
+        <div class="sched-cell platform">&#x25B6; YouTube</div>
+        <div class="sched-cell">2:00 PM EST</div>
+        <div class="sched-cell">3:00 AM WITA (next day)</div>
+        <div class="sched-cell">Schedule via YouTube Studio, auto-publish</div>
+      </div>
+      <div class="sched-row">
+        <div class="sched-cell platform">&#x2709; Daily Digest</div>
+        <div class="sched-cell">6:00 PM EST (prev day)</div>
+        <div class="sched-cell">7:00 AM WITA</div>
+        <div class="sched-cell">n8n automated, wake up to fresh intel</div>
+      </div>
+      <div class="sched-row">
+        <div class="sched-cell platform">&#x1F4E7; Weekly Emails</div>
+        <div class="sched-cell">5:00 PM EST (prev day)</div>
+        <div class="sched-cell">6:00 AM WITA</div>
+        <div class="sched-cell">n8n drip emails (Wed-Fri agents)</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;border-left:4px solid var(--warning)">
+      <h4 style="margin-top:0;color:var(--warning)">&#x26A0; Timezone Strategy</h4>
+      <p style="color:var(--text-dim)">The 13-hour offset is actually an advantage: Waseem creates content during Bali morning/afternoon (6 AM - 4 PM WITA), and it auto-publishes during US business hours (5 PM - 3 AM WITA). By the time Waseem wakes up, all engagement metrics from the US audience are visible for analysis.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 11: IMPLEMENTATION STEPS                             -->
+<!-- ============================================================ -->
+<section id="implement">
+  <div class="container">
+    <span class="section-num">Section 10</span>
+    <h2><span class="accent">Implementation</span> Steps</h2>
+    <p class="section-desc">Follow these steps in order to deploy the AEO Engine v2.0. Total setup time: approximately 30-45 minutes.</p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-text">Run <code>python build_v2.py</code> to generate both n8n workflow JSON files (Daily Digest + Weekly AEO Engine)</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text">Import <strong>Daily Digest JSON</strong> into n8n &mdash; Go to Workflows &rarr; Import from File &rarr; select the daily digest JSON</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text">Import <strong>Weekly AEO Engine JSON</strong> into n8n &mdash; Same process, second workflow</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text">Set up credentials in n8n: <strong>OpenAI API</strong> (GPT-4.1), <strong>Serper API</strong> (SERP data), <strong>Google Gemini API</strong> (RSS analysis), <strong>SMTP</strong> (email delivery)</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text">Update <strong>recipient email address</strong> in both workflows &mdash; check all SMTP nodes in both workflow canvases</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text">Test <strong>Daily Digest</strong> manually &mdash; click "Execute Workflow" button to trigger one full run. Verify email arrives with 8 curated stories + travel hack.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text">Test <strong>Weekly Engine Monday agent</strong> manually &mdash; Execute just the Monday chain. Verify keyword + SERP data saves to static data.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text"><strong>Activate both workflows</strong> &mdash; Toggle the "Active" switch in the top-right of each workflow. Schedules will begin triggering automatically.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text"><strong>Monitor first full week</strong> of output &mdash; Review all 4 drip emails (Wed-Fri) for content quality, AEO scoring, relevance to target keywords.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-text"><strong>Iterate prompts</strong> based on content quality &mdash; Adjust GPT system prompts in each agent node to refine tone, depth, and AEO optimization.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 12: CREDENTIALS REQUIRED                             -->
+<!-- ============================================================ -->
+<section id="creds">
+  <div class="container">
+    <span class="section-num">Section 11</span>
+    <h2><span class="accent">Credentials</span> Required</h2>
+    <p class="section-desc">Four API credentials needed to power both workflows. Total estimated cost: ~$15-25/month at moderate usage.</p>
+
+    <div class="copy-wrap">
+      <button class="copy-btn" onclick="copyBlock(this)">&#x1F4CB; Copy</button>
+      <div class="table-wrap" id="creds-table">
+        <table>
+          <thead>
+            <tr><th>Service</th><th>Purpose</th><th>Where to Get</th><th>Est. Cost</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:var(--primary)">OpenAI API</strong></td>
+              <td>GPT-4.1 for all content generation (articles, newsletters, scripts, pitches)</td>
+              <td><a href="https://platform.openai.com" target="_blank">platform.openai.com</a></td>
+              <td>~$10-15/mo</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--secondary)">Serper API</strong></td>
+              <td>Google SERP results + People Also Ask extraction for keyword research</td>
+              <td><a href="https://serper.dev" target="_blank">serper.dev</a></td>
+              <td>Free tier (2,500 queries)</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--info)">Google Gemini</strong></td>
+              <td>Gemini 2.5 Flash for RSS feed deep analysis and research synthesis</td>
+              <td><a href="https://ai.google.dev" target="_blank">ai.google.dev</a></td>
+              <td>Free tier (sufficient)</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--warning)">SMTP</strong></td>
+              <td>Email delivery for daily digest and weekly drip emails</td>
+              <td>Your email provider (Gmail, SendGrid, Mailgun)</td>
+              <td>Free (Gmail) or ~$5/mo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;border-left:4px solid var(--primary)">
+      <h4 style="margin-top:0;color:var(--primary)">&#x1F4B0; Total Monthly Cost: $15-25</h4>
+      <p style="color:var(--text-dim)">The entire system runs for less than a single coworking day pass in Canggu. OpenAI is the primary cost driver &mdash; GPT-4.1 at ~$10/million input tokens. Serper and Gemini both offer generous free tiers that cover weekly usage. SMTP via Gmail is free for low volumes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER                                                       -->
+<!-- ============================================================ -->
+<footer class="footer">
+  <div style="margin-bottom:16px">
+    <span style="font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">SkynetJoe</span>
+  </div>
+  <p style="color:var(--text-dim);font-size:14px">
+    Built by <strong style="color:var(--text)">Waseem Nasir</strong> &bull; SkynetJoe &bull; v2.0 Nomad CEO Edition &bull; April 2026
+  </p>
+  <div class="links">
+    <a href="https://www.skynetjoe.com" target="_blank">&#x1F310; skynetjoe.com</a>
+    <a href="https://www.waseemnasir.com" target="_blank">&#x1F464; waseemnasir.com</a>
+    <a href="https://github.com/waseemnasir2k26" target="_blank">&#x1F4BB; GitHub</a>
+  </div>
+  <p style="color:var(--text-muted);font-size:12px;margin-top:16px">Self-contained document. No external dependencies. Open in any browser.</p>
+</footer>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT: Copy buttons + Scroll spy                        -->
+<!-- ============================================================ -->
+<script>
+function copyBlock(btn) {
+  const wrap = btn.closest('.copy-wrap');
+  let target = wrap.querySelector('.ascii-box, .pitch-template, .table-wrap');
+  let text = '';
+  if (target) {
+    text = target.innerText || target.textContent;
+  }
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '&#x2714; Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '&#x1F4CB; Copy';
+    }, 2000);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text.trim();
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    btn.innerHTML = '&#x2714; Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '&#x1F4CB; Copy';
+    }, 2000);
+  });
+}
+
+// Scroll spy for nav dots
+const sections = document.querySelectorAll('section, header.hero');
+const navLinks = document.querySelectorAll('.toc a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 200;
+    if (window.scrollY >= top) {
+      current = section.id;
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+</script>
+
+</body>
+</html>

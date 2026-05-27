@@ -1,0 +1,1658 @@
+{
+  "name": "SkynetJoe Weekly AEO Content Engine v2.0 - 5 Agent Split",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 1 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "d50794dc-43c8-4e4a-9126-2347243f335c",
+      "name": "Schedule - Monday 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "brandName",
+              "value": "SkynetJoe"
+            },
+            {
+              "name": "founderName",
+              "value": "Waseem Nasir"
+            },
+            {
+              "name": "industry",
+              "value": "AI Automation Agency"
+            },
+            {
+              "name": "targetAudience",
+              "value": "Small Business Owners, Entrepreneurs, Freelancers"
+            },
+            {
+              "name": "tone",
+              "value": "Sharp, data-driven, practitioner voice. No corporate buzzwords."
+            },
+            {
+              "name": "brandColor",
+              "value": "#13b973"
+            },
+            {
+              "name": "secondaryColor",
+              "value": "#8B5CF6"
+            },
+            {
+              "name": "websiteUrl",
+              "value": "https://www.skynetjoe.com"
+            },
+            {
+              "name": "recipientEmail",
+              "value": "waseemhome8@gmail.com"
+            },
+            {
+              "name": "senderEmail",
+              "value": "waseem@skynetjoe.com"
+            },
+            {
+              "name": "travelContext",
+              "value": "Currently traveling ASEAN (Bali, Indonesia). Running AI agency remotely."
+            },
+            {
+              "name": "keywords",
+              "value": "AI automation for small business, AI employee, n8n automation, chatbot development, AI workflow automation, business process automation, AI implementation guide, AI cost for SMB, AI vs hiring, custom AI solutions, AI agency services, web development with AI, social media automation, digital nomad AI business, remote CEO lifestyle, AI tools for entrepreneurs, Bali coworking for tech founders, ASEAN startup scene, travel while running business, location independent agency"
+            },
+            {
+              "name": "travelKeywords",
+              "value": "digital nomad Bali, remote work Indonesia, coworking Canggu, CEO lifestyle abroad, running agency while traveling, ASEAN business, Bali cost of living, digital nomad visa Indonesia"
+            },
+            {
+              "name": "articleBaseUrl",
+              "value": "https://www.skynetjoe.com/blog/"
+            },
+            {
+              "name": "logoUrl",
+              "value": ""
+            },
+            {
+              "name": "linkedinProfile",
+              "value": "https://www.linkedin.com/in/waseemnasir/"
+            }
+          ]
+        }
+      },
+      "id": "230ad50b-d115-4038-b5cd-b432ef1eaced",
+      "name": "Client Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.contentHistory) staticData.contentHistory = [];\nconst history = staticData.contentHistory;\n\nconst config = $input.first().json;\nconst allKeywords = config.keywords.split(', ');\nconst travelKw = config.travelKeywords.split(', ');\nconst combinedKeywords = [...allKeywords, ...travelKw];\n\nconst usedKeywords = history.slice(-8).map(h => h.primaryKeyword);\nconst usedTitles = history.slice(-4).map(h => h.articleTitle);\nconst usedAngles = history.slice(-4).map(h => h.articleAngle);\n\nconst available = combinedKeywords.filter(k => !usedKeywords.includes(k));\nconst pool = available.length > 0 ? available : combinedKeywords;\nconst primaryKeyword = pool[Math.floor(Math.random() * pool.length)];\n\nconst isTravelTopic = travelKw.includes(primaryKeyword);\n\nconst variants = ['trends 2026', 'for SMB', 'cost', 'vs alternatives', 'best practices', 'ROI', 'case study', 'how-to'];\nconst variant = variants[history.length % variants.length];\nconst expandedKeyword = `${primaryKeyword} ${variant}`;\n\nconst prefixes = ['what is', 'how to', 'why', 'best', 'top', 'how much does', 'is it worth'];\nconst prefix = prefixes[history.length % prefixes.length];\nconst questionQuery = `${prefix} ${primaryKeyword}`;\n\nconst structures = ['deep-dive', 'problem-solution', 'case-study'];\nconst usedStructures = history.slice(-3).map(h => h.articleStructure);\nlet articleStructure = structures.find(s => !usedStructures.includes(s)) || structures[0];\n\nreturn [{\n  json: {\n    primaryKeyword,\n    expandedKeyword,\n    questionQuery,\n    articleStructure,\n    isTravelTopic,\n    keywordList: pool.slice(0, 10),\n    usedTitles,\n    usedAngles,\n    runNumber: history.length + 1\n  }\n}];\n"
+      },
+      "id": "9e476dc9-ee8f-4424-95c1-9ec8512364ad",
+      "name": "Prepare Keywords",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://suggestqueries.google.com/complete/search",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "client",
+              "value": "firefox"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.expandedKeyword }}"
+            }
+          ]
+        }
+      },
+      "id": "bf7b6e10-0ae6-4db6-af77-1f5f651b98b9",
+      "name": "Autocomplete Keywords",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        180
+      ],
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "https://suggestqueries.google.com/complete/search",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "client",
+              "value": "firefox"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.questionQuery }}"
+            }
+          ]
+        }
+      },
+      "id": "a1a0e5d8-d9e5-498f-9fdf-ac5df8277081",
+      "name": "Autocomplete Questions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        300
+      ],
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "https://google.serper.dev/search",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Prepare Keywords').first().json.primaryKeyword }}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "serperApi"
+      },
+      "id": "5a9db336-ffd9-4566-9d05-6fe2460fd900",
+      "name": "Serper SERP Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        420
+      ],
+      "credentials": {
+        "serperApi": {
+          "id": "REPLACE_WITH_YOUR_SERPER_CREDENTIAL_ID",
+          "name": "Serper API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge autocomplete + Serper results\nconst items = $input.all();\n\nlet autoKeywords = [], autoQuestions = [];\ntry {\n  const kwRaw = items[0]?.json;\n  if (kwRaw?.data) {\n    const parsed = typeof kwRaw.data === 'string' ? JSON.parse(kwRaw.data) : kwRaw.data;\n    autoKeywords = Array.isArray(parsed) && parsed[1] ? parsed[1] : [];\n  }\n} catch(e) {}\ntry {\n  const qRaw = items[1]?.json;\n  if (qRaw?.data) {\n    const parsed = typeof qRaw.data === 'string' ? JSON.parse(qRaw.data) : qRaw.data;\n    autoQuestions = Array.isArray(parsed) && parsed[1] ? parsed[1] : [];\n  }\n} catch(e) {}\n\nlet serp = {};\ntry { serp = items[2]?.json || {}; } catch(e) {}\n\nconst paa = (serp.peopleAlsoAsk || []).map(p => p.question);\nconst relatedSearches = (serp.relatedSearches || []).map(r => r.query);\nconst organicTitles = (serp.organic || []).slice(0, 5).map(o => `${o.title} - ${o.link}`);\nconst featuredSnippet = serp.answerBox ? `${serp.answerBox.title}: ${serp.answerBox.snippet}` : 'None';\n\nconst prep = $('Prepare Keywords').first().json;\n\nreturn [{\n  json: {\n    primaryKeyword: prep.primaryKeyword,\n    questionQuery: prep.questionQuery,\n    articleStructure: prep.articleStructure,\n    isTravelTopic: prep.isTravelTopic,\n    autocompleteSuggestions: (Array.isArray(autoKeywords) ? autoKeywords : []).join('\\n'),\n    questionSuggestions: (Array.isArray(autoQuestions) ? autoQuestions : []).join('\\n'),\n    paaQuestions: paa.join('\\n'),\n    relatedSearches: relatedSearches.join('\\n'),\n    organicTitles: organicTitles.join('\\n'),\n    featuredSnippets: featuredSnippet,\n    usedTitles: (prep.usedTitles || []).join('\\n'),\n    usedAngles: (prep.usedAngles || []).join('\\n'),\n  }\n}];\n"
+      },
+      "id": "62795d7d-d145-4d42-9cb0-8d73600e7bd8",
+      "name": "Merge Keyword Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an SEO/AEO strategist for SkynetJoe, an AI automation agency. The founder Waseem Nasir is currently traveling ASEAN (Bali). Content should position him as a practitioner-founder, not an influencer.",
+              "role": "system"
+            },
+            {
+              "content": "=Primary keyword: {{ $json.primaryKeyword }}\nQuestion query: {{ $json.questionQuery }}\nArticle structure: {{ $json.articleStructure }}\nIs travel topic: {{ $json.isTravelTopic }}\n\nAutocomplete suggestions: {{ $json.autocompleteSuggestions }}\nQuestion suggestions: {{ $json.questionSuggestions }}\nPeople Also Ask: {{ $json.paaQuestions }}\nRelated searches: {{ $json.relatedSearches }}\nTop organic titles: {{ $json.organicTitles }}\nFeatured snippets: {{ $json.featuredSnippets }}\n\nPreviously used titles (avoid): {{ $json.usedTitles }}\n\nSkynetJoe services: AI Employee setup, n8n automation, chatbot development, web development, social media automation, content engines, workflow consulting\n\nGenerate a content strategy as JSON:\n{\n  \"primaryKeyword\": \"\",\n  \"secondaryKeywords\": [\"\", \"\", \"\"],\n  \"longTailKeywords\": [\"\", \"\"],\n  \"targetQuestions\": [\"\", \"\", \"\"],\n  \"seoTitle\": \"(under 65 chars, include 2026)\",\n  \"articleAngle\": \"(unique perspective)\",\n  \"contentBrief\": \"(2-3 sentences)\",\n  \"travelAngle\": \"(how to weave in nomad/travel perspective)\",\n  \"aeoStrategy\": {\n    \"directAnswer\": \"(2-sentence answer AI engines should extract)\",\n    \"schemaTypes\": [\"Article\", \"FAQPage\"],\n    \"comparisonOpportunity\": \"\"\n  },\n  \"competitorInsights\": \"\",\n  \"linkedinAngle\": \"\",\n  \"brandCollabOpportunity\": \"(which brands could be mentioned/tagged)\"\n}\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.6,
+          "maxTokens": 2048
+        }
+      },
+      "id": "9ed7b72a-874d-4079-ae89-65f8d392054e",
+      "name": "GPT Keyword Strategy",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1520,
+        300
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse GPT strategy response\nconst items = $input.all();\nfunction extractText(r) {\n  if (!r) return '';\n  if (typeof r === 'string') return r;\n  if (r.text) return r.text;\n  if (r.message?.content) return r.message.content;\n  if (r.output) return typeof r.output === 'string' ? r.output : JSON.stringify(r.output);\n  return JSON.stringify(r);\n}\nconst raw = extractText(items[0]?.json);\nlet strategy;\ntry {\n  const cleaned = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  strategy = JSON.parse(cleaned);\n} catch(e) {\n  const jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    try { strategy = JSON.parse(jsonMatch[0]); } catch(e2) {\n      strategy = {\n        primaryKeyword: 'AI automation', seoTitle: 'AI Automation Guide 2026',\n        articleAngle: 'practitioner guide', contentBrief: 'Guide to AI automation',\n        travelAngle: 'Written from Bali', targetQuestions: ['What is AI automation?'],\n        secondaryKeywords: [], longTailKeywords: [],\n        aeoStrategy: { directAnswer: '', schemaTypes: ['Article'], comparisonOpportunity: '' },\n        competitorInsights: '', linkedinAngle: '', brandCollabOpportunity: ''\n      };\n    }\n  }\n}\nreturn [{ json: strategy }];\n"
+      },
+      "id": "772fc91a-91e9-4c90-8bf5-7a7075014bb8",
+      "name": "Parse Strategy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.pipeline) staticData.pipeline = {};\nstaticData.pipeline.clientConfig = $('Client Configuration').first().json;\nstaticData.pipeline.prepKeywords = $('Prepare Keywords').first().json;\nstaticData.pipeline.keywordData = $('Merge Keyword Data').first().json;\nstaticData.pipeline.strategy = $('Parse Strategy').first().json;\nstaticData.pipeline.__lastUpdated = new Date().toISOString();\nstaticData.pipeline.__lastStage = 'monday';\nconst s = staticData.pipeline.strategy;\nreturn [{ json: { status: 'Monday agent complete', keyword: staticData.pipeline.prepKeywords.primaryKeyword, title: s.seoTitle } }];\n"
+      },
+      "id": "78887c9f-1eb2-4ee5-8d50-448b69809557",
+      "name": "Save State - Monday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 1 * * 2"
+            }
+          ]
+        }
+      },
+      "id": "cdb0dab6-2070-4f5c-ad9f-c3835f3d685f",
+      "name": "Schedule - Tuesday 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Load pipeline state from workflow static data\nconst staticData = $getWorkflowStaticData('global');\nconst pipeline = staticData.pipeline || {};\nconst required = [\"strategy\", \"prepKeywords\", \"clientConfig\"];\nconst missing = required.filter(k => !pipeline[k]);\nif (missing.length > 0) {\n  throw new Error('Pipeline state missing: ' + missing.join(', ') + '. Run earlier agent(s) first.');\n}\nreturn [{ json: pipeline }];\n"
+      },
+      "id": "384512d3-cb6c-4501-90bd-54021524a98a",
+      "name": "Load State - Tuesday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Output 19 RSS feed objects for the loop\n// NOTE: Shares dedupe history with Daily Digest via staticData.contentHistory / digestHistory.\n// For persistent cross-workflow dedupe, both workflows reference TOPIC_HISTORY_SHEET_ID (Google Sheet).\n// Dead feed removed per audit 2026-04-17 (was AI-News aggregator flagged dead).\nconst feeds = [{\"url\": \"https://techcrunch.com/category/artificial-intelligence/feed/\", \"category\": \"AI\", \"name\": \"TechCrunch AI\"}, {\"url\": \"https://www.theverge.com/rss/ai-artificial-intelligence/index.xml\", \"category\": \"AI\", \"name\": \"The Verge AI\"}, {\"url\": \"https://feeds.feedburner.com/venturebeat/SZYF\", \"category\": \"AI\", \"name\": \"VentureBeat\"}, {\"url\": \"https://www.technologyreview.com/topic/artificial-intelligence/feed\", \"category\": \"AI\", \"name\": \"MIT Tech Review\"}, {\"url\": \"https://arstechnica.com/feed/\", \"category\": \"AI\", \"name\": \"Ars Technica\"}, {\"url\": \"https://blog.n8n.io/rss/\", \"category\": \"AI\", \"name\": \"n8n Blog\"}, {\"url\": \"https://openai.com/blog/rss.xml\", \"category\": \"AI\", \"name\": \"OpenAI Blog\"}, {\"url\": \"https://www.marktechpost.com/feed/\", \"category\": \"AI\", \"name\": \"MarkTechPost\"}, {\"url\": \"https://hnrss.org/best\", \"category\": \"AI\", \"name\": \"HN Best\"}, {\"url\": \"https://www.nomadicmatt.com/travel-blog/feed/\", \"category\": \"Travel\", \"name\": \"Nomadic Matt\"}, {\"url\": \"https://thepointsguy.com/feed/\", \"category\": \"Travel\", \"name\": \"The Points Guy\"}, {\"url\": \"https://www.skyscanner.net/news/feed/\", \"category\": \"Travel\", \"name\": \"Skyscanner\"}, {\"url\": \"https://www.travelandleisure.com/feeds/all\", \"category\": \"Travel\", \"name\": \"Travel+Leisure\"}, {\"url\": \"https://nomadlist.com/feed\", \"category\": \"Travel\", \"name\": \"NomadList\"}, {\"url\": \"https://smallbiztrends.com/feed\", \"category\": \"Business\", \"name\": \"Small Biz Trends\"}, {\"url\": \"https://www.indiehackers.com/feed.xml\", \"category\": \"Business\", \"name\": \"Indie Hackers\"}, {\"url\": \"https://review.firstround.com/feed.xml\", \"category\": \"Business\", \"name\": \"First Round Review\"}, {\"url\": \"https://www.saastr.com/feed/\", \"category\": \"Business\", \"name\": \"SaaStr\"}, {\"url\": \"https://hbr.org/feed\", \"category\": \"Business\", \"name\": \"HBR\"}];\nreturn feeds.map(f => ({ json: f }));\n"
+      },
+      "id": "8e63a1dc-d582-45c9-92a7-e449051b1560",
+      "name": "RSS Sources",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "82e7badd-3f3a-44f0-a3ff-e40cc6c38a42",
+      "name": "Split RSS Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1000,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "507786b8-d06a-4696-90a7-6236be40e51d",
+      "name": "Fetch RSS Feed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1260,
+        900
+      ],
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract stories from all fetched RSS feeds, filter to last 7 days\nconst items = $input.all();\nconst stories = [];\nconst now = Date.now();\nconst WEEK_MS = 7 * 24 * 60 * 60 * 1000;\n\n// Dedup against content history\nconst staticData = $getWorkflowStaticData('global');\nconst history = staticData.contentHistory || [];\nconst usedUrls = new Set(history.slice(-4).flatMap(h => h.storyUrls || []));\n\nfor (const item of items) {\n  const feedName = item.json.name || 'Unknown';\n  const feedCategory = item.json.category || 'AI';\n  const raw = item.json.data || item.json.body || '';\n  if (!raw || typeof raw !== 'string' || raw.length < 50) continue;\n\n  const itemRegex = /<item[\\s>][\\s\\S]*?<\\/item>|<entry[\\s>][\\s\\S]*?<\\/entry>/gi;\n  const matches = raw.match(itemRegex) || [];\n  for (const m of matches) {\n    const title = (m.match(/<title[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/title>/s) || [])[1] || '';\n    const link = (m.match(/<link[^>]*href=\"([^\"]*)\"/) || m.match(/<link[^>]*>(.*?)<\\/link>/) || [])[1] || '';\n    const desc = (m.match(/<description[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/description>/s) ||\n                  m.match(/<summary[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?<\\/summary>/s) || [])[1] || '';\n    const pubDate = (m.match(/<pubDate[^>]*>(.*?)<\\/pubDate>/) ||\n                     m.match(/<published[^>]*>(.*?)<\\/published>/) || [])[1] || '';\n    const ts = pubDate ? new Date(pubDate).getTime() : 0;\n    if (ts && (now - ts) > WEEK_MS) continue;\n    if (link && usedUrls.has(link)) continue;\n    const cleanDesc = desc.replace(/<[^>]*>/g, '').substring(0, 200);\n    stories.push({ title: title.trim(), link: link.trim(), description: cleanDesc.trim(), pubDate, source: feedName, category: feedCategory });\n  }\n}\n\n// Deduplicate\nconst seen = new Set();\nconst unique = stories.filter(s => {\n  if (!s.link || seen.has(s.link)) return false;\n  seen.add(s.link);\n  return true;\n});\nunique.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));\nconst top50 = unique.slice(0, 50);\n\n// Format as CSV text for Gemini\nlet csv = 'rank,title,source,category,url,description\\n';\ntop50.forEach((s, i) => {\n  csv += `${i+1},\"${s.title.replace(/\"/g, '\"\"')}\",\"${s.source}\",\"${s.category}\",\"${s.link}\",\"${s.description.replace(/\"/g, '\"\"')}\"\\n`;\n});\n\nreturn [{ json: { csvData: csv, storyCount: top50.length, stories: top50 } }];\n"
+      },
+      "id": "22361523-d906-4554-b345-adbfaa6aa72e",
+      "name": "Convert to Research Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"You are a research analyst for SkynetJoe (AI automation agency). Analyze these RSS stories and rank them by relevance.\\n\\nPrimary keyword this week: \" + $('Load State - Tuesday').first().json.strategy.primaryKeyword + \"\\nTravel angle: \" + ($('Load State - Tuesday').first().json.strategy.travelAngle || 'digital nomad perspective') + \"\\n\\nStories (CSV):\\n\" + $json.csvData + \"\\n\\nReturn ONLY valid JSON:\\n{\\n  \\\"rankedStories\\\": [{\\n    \\\"rank\\\": 1, \\\"title\\\": \\\"\\\", \\\"url\\\": \\\"\\\", \\\"source\\\": \\\"\\\", \\\"summary\\\": \\\"\\\", \\\"relevanceScore\\\": 85, \\\"keywordAlignment\\\": \\\"\\\", \\\"aeoAngle\\\": \\\"\\\", \\\"category\\\": \\\"AI|Travel|Business\\\"\\n  }],\\n  \\\"topStory\\\": {\\\"title\\\": \\\"\\\", \\\"url\\\": \\\"\\\", \\\"whyTop\\\": \\\"\\\"},\\n  \\\"travelStories\\\": [],\\n  \\\"trendInsight\\\": \\\"one-paragraph trend analysis\\\",\\n  \\\"newsletterStories\\\": []\\n}\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"temperature\": 0.5,\n    \"maxOutputTokens\": 4096\n  }\n}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "872bc1ba-77aa-4d3b-8cd5-1c1520ad5a5e",
+      "name": "Gemini Deep Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1780,
+        900
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "Gemini API Header Auth"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Gemini response\nconst items = $input.all();\nconst raw = items[0]?.json;\nlet text = '';\ntry {\n  text = raw?.candidates?.[0]?.content?.parts?.[0]?.text || JSON.stringify(raw);\n} catch(e) { text = JSON.stringify(raw); }\n\nlet research;\ntry {\n  const cleaned = text.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  research = JSON.parse(cleaned);\n} catch(e) {\n  const jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\n  try { research = JSON.parse(jsonMatch[0]); } catch(e2) {\n    research = { rankedStories: [], topStory: { title: 'N/A', url: '', whyTop: '' }, travelStories: [], trendInsight: '', newsletterStories: [] };\n  }\n}\nreturn [{ json: research }];\n"
+      },
+      "id": "72db022c-2c6a-4eb3-aba8-9820b8009b4f",
+      "name": "Parse Research",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst research = $('Parse Research').first().json;\nstaticData.pipeline.research = research;\nstaticData.pipeline.__lastUpdated = new Date().toISOString();\nstaticData.pipeline.__lastStage = 'tuesday';\nreturn [{ json: { status: 'Tuesday agent complete', topStory: research.topStory?.title, storyCount: research.rankedStories?.length } }];\n"
+      },
+      "id": "5cb621ba-33bc-40f8-8d21-a9c6db572cf0",
+      "name": "Save State - Tuesday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2300,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 1 * * 3"
+            }
+          ]
+        }
+      },
+      "id": "fa2e64d0-2441-4dab-b00f-61f98e365479",
+      "name": "Schedule - Wednesday 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Load pipeline state from workflow static data\nconst staticData = $getWorkflowStaticData('global');\nconst pipeline = staticData.pipeline || {};\nconst required = [\"strategy\", \"prepKeywords\", \"clientConfig\", \"research\"];\nconst missing = required.filter(k => !pipeline[k]);\nif (missing.length > 0) {\n  throw new Error('Pipeline state missing: ' + missing.join(', ') + '. Run earlier agent(s) first.');\n}\nreturn [{ json: pipeline }];\n"
+      },
+      "id": "619159cf-0e45-41e8-a361-13ee4f01c955",
+      "name": "Load State - Wednesday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a senior content writer for SkynetJoe. Write AEO-optimized articles that position Waseem Nasir as a practitioner-founder who builds AI automation while traveling the world.",
+              "role": "system"
+            },
+            {
+              "content": "=Write an AEO-optimized article based on this strategy:\n\nTitle: {{ $('Load State - Wednesday').first().json.strategy.seoTitle }}\nPrimary keyword: {{ $('Load State - Wednesday').first().json.strategy.primaryKeyword }}\nSecondary keywords: {{ JSON.stringify($('Load State - Wednesday').first().json.strategy.secondaryKeywords) }}\nArticle structure: {{ $('Load State - Wednesday').first().json.prepKeywords.articleStructure }}\nContent brief: {{ $('Load State - Wednesday').first().json.strategy.contentBrief }}\nTravel angle: {{ $('Load State - Wednesday').first().json.strategy.travelAngle }}\nTarget questions: {{ JSON.stringify($('Load State - Wednesday').first().json.strategy.targetQuestions) }}\nAEO direct answer: {{ $('Load State - Wednesday').first().json.strategy.aeoStrategy.directAnswer }}\nTop research story: {{ JSON.stringify($('Load State - Wednesday').first().json.research.topStory) }}\nTrend insight: {{ $('Load State - Wednesday').first().json.research.trendInsight }}\n\nRULES:\n- 800-1200 words\n- Every H2/H3 is a real question people search\n- Open every section with 1-2 sentence direct answer (for AI extraction)\n- At least 1 stat per section (real, sourced)\n- Include comparison table where relevant\n- Bulleted lists for key points\n- FAQ section: 3-5 Q&A from PAA data\n- Author: Waseem Nasir, Founder of SkynetJoe\n- Include 1-2 internal links to skynetjoe.com service pages\n- If travel topic: weave in Bali/ASEAN angle naturally\n- If AI topic: include \"Nomad CEO perspective\" sidebar or paragraph\n- NO buzzwords: leverage, synergy, cutting-edge, game-changing, revolutionize, robust, comprehensive, innovative, transformative\n- NO dates before 2026\n\nOutput format:\nHTML_CONTENT_HERE\n|||META|||\n{\"title\": \"\", \"slug\": \"\", \"excerpt\": \"\", \"wordCount\": 0, \"primaryKeyword\": \"\", \"aeoScore\": 0, \"schemaTypes\": [], \"travelRelevance\": \"high|medium|low\"}\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 4096
+        }
+      },
+      "id": "926230ab-0e00-4ec8-a7e5-a13124ad981d",
+      "name": "GPT Write Article",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        740,
+        1500
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract article HTML and metadata from GPT response\nconst items = $input.all();\nfunction extractText(r) {\n  if (!r) return '';\n  if (typeof r === 'string') return r;\n  if (r.text) return r.text;\n  if (r.message?.content) return r.message.content;\n  if (r.output) return typeof r.output === 'string' ? r.output : JSON.stringify(r.output);\n  return JSON.stringify(r);\n}\nconst raw = extractText(items[0]?.json);\nconst parts = raw.split('|||META|||');\nlet articleHtml = (parts[0] || '').replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nlet metadata = {};\ntry {\n  const metaRaw = (parts[1] || '').replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  const jsonMatch = metaRaw.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) metadata = JSON.parse(jsonMatch[0]);\n} catch(e) {\n  metadata = { title: 'AEO Article', slug: 'article-' + Date.now(), excerpt: '', wordCount: articleHtml.split(/\\s+/).length, primaryKeyword: '', aeoScore: 0, schemaTypes: ['Article'] };\n}\nreturn [{ json: { articleHtml, metadata } }];\n"
+      },
+      "id": "5cfe51ed-634c-4400-8f97-7ce4579fdbf7",
+      "name": "Extract Article",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an AEO Editor. Score and optimize articles for Answer Engine Optimization.",
+              "role": "system"
+            },
+            {
+              "content": "=Score the following article on 5 criteria (0-20 each, 100 total):\n1. Direct Answer quality (AI extractability)\n2. Data Richness (real numbers, stats, dates)\n3. Question Headings (match AI search surfaces)\n4. Keyword Integration (natural, not stuffed)\n5. FAQ Quality (specific, quotable answers)\n\nMake surgical edits. Remove buzzwords. Fix vague headings. Ensure first paragraph is AI-extractable.\n\nARTICLE HTML:\n{{ $json.articleHtml }}\n\nReturn the optimized HTML followed by |||META||| and JSON:\n{\"aeoScore\": 85, \"scores\": {\"directAnswers\": 18, \"dataRichness\": 17, \"questionHeadings\": 16, \"keywordIntegration\": 17, \"faqQuality\": 17}, \"optimizations\": [\"list of changes made\"]}\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.5,
+          "maxTokens": 4096
+        }
+      },
+      "id": "dcd88819-a1cb-44f3-8047-97ece49d7b9c",
+      "name": "GPT AEO Editor",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1260,
+        1500
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Finalize article with quality checks\nconst items = $input.all();\nfunction extractText(r) {\n  if (!r) return '';\n  if (typeof r === 'string') return r;\n  if (r.text) return r.text;\n  if (r.message?.content) return r.message.content;\n  if (r.output) return typeof r.output === 'string' ? r.output : JSON.stringify(r.output);\n  return JSON.stringify(r);\n}\nconst raw = extractText(items[0]?.json);\nconst parts = raw.split('|||META|||');\nlet articleHtml = (parts[0] || '').replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\nlet editorMeta = {};\ntry {\n  const metaRaw = (parts[1] || '').replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  const jsonMatch = metaRaw.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) editorMeta = JSON.parse(jsonMatch[0]);\n} catch(e) { editorMeta = { aeoScore: 70, scores: {}, optimizations: [] }; }\n\n// Quality checks\nconst buzzwords = ['leverage', 'synergy', 'cutting-edge', 'game-changer', 'revolutionize', 'disrupt', 'paradigm', 'holistic', 'robust solution', 'comprehensive', 'innovative', 'transformative'];\nconst foundBuzzwords = buzzwords.filter(b => articleHtml.toLowerCase().includes(b));\nconst oldDates = articleHtml.match(/\\b(2023|2024|2025)\\b/g) || [];\n\nconst pipeline = $getWorkflowStaticData('global').pipeline || {};\nconst config = pipeline.clientConfig || {};\nconst origMeta = $('Extract Article').first().json.metadata || {};\nconst slug = origMeta.slug || editorMeta.slug || 'article-' + Date.now();\nconst articleUrl = (config.articleBaseUrl || 'https://www.skynetjoe.com/blog/') + slug;\n\nreturn [{\n  json: {\n    articleHtml, articleUrl, slug,\n    aeoScore: editorMeta.aeoScore || 70,\n    scores: editorMeta.scores || {},\n    optimizations: editorMeta.optimizations || [],\n    qualityWarnings: { buzzwordsFound: foundBuzzwords, oldDatesFound: oldDates },\n    metadata: { ...origMeta, ...editorMeta, slug, articleUrl },\n  }\n}];\n"
+      },
+      "id": "bd5801f0-4f28-4e95-901d-4f4220693fe2",
+      "name": "Finalize Article",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are Waseem Nasir, founder of SkynetJoe (www.skynetjoe.com), an AI automation agency. Currently in Bali, running the agency remotely.",
+              "role": "system"
+            },
+            {
+              "content": "=Write a LinkedIn post based on this article.\n\nArticle title: {{ $json.metadata.title }}\nKey insight: {{ $json.metadata.excerpt }}\nTravel context: Currently in Bali, running SkynetJoe remotely.\n\nRULES:\n- 150-250 words\n- Bold opening claim or stat\n- 1-2 specific facts\n- Reference specific tool/company/tech\n- Weave in travel angle: \"I'm writing this from [Bali cafe/coworking/villa]...\" -- subtle, not braggy\n- End with question or actionable takeaway\n- No emojis, no corporate buzzwords\n- Line breaks for LinkedIn formatting\n- 3-5 hashtags at end\n- If relevant, tag a brand (Notion, n8n, OpenAI, etc.)\n\nReturn ONLY the post text.\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1024
+        }
+      },
+      "id": "19cf7d9a-2427-42fb-bac5-c531f76b316d",
+      "name": "GPT LinkedIn Post",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1780,
+        1500
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nfunction extractText(r) {\n  if (!r) return '';\n  if (typeof r === 'string') return r;\n  if (r.text) return r.text;\n  if (r.message?.content) return r.message.content;\n  if (r.output) return typeof r.output === 'string' ? r.output : JSON.stringify(r.output);\n  return JSON.stringify(r);\n}\nstaticData.pipeline.article = $('Finalize Article').first().json;\nstaticData.pipeline.linkedinPost = extractText($('GPT LinkedIn Post').first().json).replace(/```/g, '');\nstaticData.pipeline.__lastUpdated = new Date().toISOString();\nstaticData.pipeline.__lastStage = 'wednesday';\nreturn [{ json: { status: 'Wednesday agent complete', title: staticData.pipeline.article?.metadata?.title } }];\n"
+      },
+      "id": "3b7ddec1-f3e0-4ef4-b278-a68673459511",
+      "name": "Save State - Wednesday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build branded email with article preview + LinkedIn post\nconst pipeline = $getWorkflowStaticData('global').pipeline || {};\nconst config = pipeline.clientConfig || {};\nconst article = pipeline.article || {};\nconst linkedinPost = pipeline.linkedinPost || '';\nconst meta = article.metadata || {};\nconst brandColor = config.brandColor || '#13b973';\nconst secondaryColor = config.secondaryColor || '#8B5CF6';\nconst websiteUrl = config.websiteUrl || 'https://www.skynetjoe.com';\nconst date = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\n\nconst html = `<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"></head>\n<body style=\"margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;\">\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:680px;margin:0 auto;\">\n  <tr><td style=\"background:linear-gradient(135deg,${secondaryColor},${brandColor});padding:32px 24px;text-align:center;\">\n    <h1 style=\"color:#fff;margin:0 0 4px;font-size:22px;\">SkynetJoe AEO Article</h1>\n    <p style=\"color:rgba(255,255,255,0.7);margin:0;font-size:13px;\">${date}</p>\n  </td></tr>\n  <tr><td style=\"background:#111;padding:28px 24px;color:#e0e0e0;\">\n    <p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2px;color:${brandColor};margin:0 0 12px;\">THIS WEEK'S ARTICLE</p>\n    <h2 style=\"color:#fff;margin:0 0 8px;font-size:20px;\">${meta.title || 'AEO Article'}</h2>\n    <p style=\"color:#aaa;margin:0 0 4px;font-size:13px;\">AEO Score: ${article.aeoScore || 'N/A'}/100 | Keyword: ${meta.primaryKeyword || 'N/A'}</p>\n    <p style=\"color:#aaa;margin:0 0 20px;font-size:13px;\">URL: <a href=\"${article.articleUrl || '#'}\" style=\"color:${brandColor};\">${article.articleUrl || 'pending'}</a></p>\n    <hr style=\"border-color:#333;\">\n    <div style=\"line-height:1.8;font-size:15px;color:#ddd;\">${article.articleHtml || '<p>Article not available</p>'}</div>\n\n    <div style=\"margin-top:28px;\">\n      <p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2px;color:${secondaryColor};margin:0 0 12px;\">LINKEDIN POST (COPY-READY)</p>\n      <div style=\"background:#1a1a2e;border-radius:8px;padding:20px;border:1px solid #333;white-space:pre-wrap;font-family:monospace;color:#e0e0e0;font-size:13px;line-height:1.7;\">${linkedinPost}</div>\n    </div>\n  </td></tr>\n  <tr><td style=\"background:#0a0a0a;padding:20px 24px;text-align:center;\">\n    <p style=\"color:#666;font-size:12px;margin:0;\">SkynetJoe AEO Engine v2.0 | <a href=\"${websiteUrl}\" style=\"color:${brandColor};\">${websiteUrl.replace('https://','')}</a></p>\n  </td></tr>\n</table></body></html>`;\n\nreturn [{ json: {\n  html, subject: 'SkynetJoe AEO Article: ' + (meta.title || 'This Week'),\n  recipientEmail: config.recipientEmail || 'waseemhome8@gmail.com',\n  senderEmail: config.senderEmail || 'waseem@skynetjoe.com'\n}}];\n"
+      },
+      "id": "afc1f55a-1564-4ee2-ac36-a3330a4305f8",
+      "name": "Build Email - Article",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2300,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.senderEmail }}",
+        "toEmail": "={{ $json.recipientEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "f5d9a774-3dba-4563-8df3-0d242219ba5e",
+      "name": "Send Email - Article",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2560,
+        1500
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 1 * * 4"
+            }
+          ]
+        }
+      },
+      "id": "136960fe-f3b0-4e7c-b849-c3244bbd5eac",
+      "name": "Schedule - Thursday 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Load pipeline state from workflow static data\nconst staticData = $getWorkflowStaticData('global');\nconst pipeline = staticData.pipeline || {};\nconst required = [\"strategy\", \"clientConfig\", \"research\", \"article\", \"linkedinPost\"];\nconst missing = required.filter(k => !pipeline[k]);\nif (missing.length > 0) {\n  throw new Error('Pipeline state missing: ' + missing.join(', ') + '. Run earlier agent(s) first.');\n}\nreturn [{ json: pipeline }];\n"
+      },
+      "id": "f0bcde30-78e7-4a6b-a545-2eff9e014910",
+      "name": "Load State - Thursday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are the newsletter editor for SkynetJoe. Create engaging, dark-themed HTML newsletters. The founder Waseem Nasir is traveling ASEAN (Bali) while running his AI agency.",
+              "role": "system"
+            },
+            {
+              "content": "=Create a weekly newsletter for SkynetJoe's audience.\n\nThis week's article: {{ $('Load State - Thursday').first().json.article.metadata.title }} ({{ $('Load State - Thursday').first().json.article.articleUrl }})\nResearch stories: {{ JSON.stringify($('Load State - Thursday').first().json.research.newsletterStories || []) }}\nTravel stories: {{ JSON.stringify($('Load State - Thursday').first().json.research.travelStories || []) }}\nTrend insight: {{ $('Load State - Thursday').first().json.research.trendInsight }}\n\nNewsletter structure:\n1. **Editorial intro** (2-3 sentences on this week's AI trends)\n2. **Featured Article** (highlight this week's article with excerpt + link) -- use green #13b973\n3. **AI & Tech News** (4-6 stories, grouped by category)\n4. **Nomad CEO Corner** (NEW SECTION -- 2-3 stories about remote work, digital nomad life, ASEAN business. This is Waseem's personal section sharing insights from traveling.)\n5. **Business & Growth** (2-3 stories)\n6. **One Thing I Learned This Week** (personal reflection from Waseem -- 2-3 sentences about something he learned while working from Bali/ASEAN)\n\nEach story: bold linked title, 2-3 line summary, source attribution.\nUse inline CSS. Dark theme cards (#1a1a2e bg, #e0e0e0 text). Category badges (colored, uppercase).\nFeatured article highlighted in #13b973 green.\nReal URLs from research data.\nOutput clean HTML only, no markdown.\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 3072
+        }
+      },
+      "id": "ea7b2c63-d80d-4564-b9e1-3033589eda9d",
+      "name": "GPT Newsletter",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        740,
+        2100
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Clean newsletter HTML\nconst items = $input.all();\nfunction extractText(r) {\n  if (!r) return '';\n  if (typeof r === 'string') return r;\n  if (r.text) return r.text;\n  if (r.message?.content) return r.message.content;\n  if (r.output) return typeof r.output === 'string' ? r.output : JSON.stringify(r.output);\n  return JSON.stringify(r);\n}\nlet html = extractText(items[0]?.json);\n// Strip markdown code fences\nhtml = html.replace(/```html\\n?/g, '').replace(/```\\n?/g, '').trim();\n// Convert any remaining markdown bold to HTML\nhtml = html.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\nreturn [{ json: { newsletterHtml: html } }];\n"
+      },
+      "id": "4945bc56-c912-41e6-8cbd-9d71bc88ff88",
+      "name": "Clean Newsletter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.pipeline.newsletter = $('Clean Newsletter').first().json;\nstaticData.pipeline.__lastUpdated = new Date().toISOString();\nstaticData.pipeline.__lastStage = 'thursday';\nreturn [{ json: { status: 'Thursday agent complete' } }];\n"
+      },
+      "id": "408d8c5e-0aa3-46e6-874f-72a4519a0e71",
+      "name": "Save State - Thursday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build branded newsletter email\nconst pipeline = $getWorkflowStaticData('global').pipeline || {};\nconst config = pipeline.clientConfig || {};\nconst newsletter = pipeline.newsletter || {};\nconst brandColor = config.brandColor || '#13b973';\nconst secondaryColor = config.secondaryColor || '#8B5CF6';\nconst websiteUrl = config.websiteUrl || 'https://www.skynetjoe.com';\nconst date = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\nconst dateShort = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });\n\nconst html = `<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"></head>\n<body style=\"margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;\">\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:680px;margin:0 auto;\">\n  <tr><td style=\"background:linear-gradient(135deg,${secondaryColor},${brandColor});padding:32px 24px;text-align:center;\">\n    <h1 style=\"color:#fff;margin:0 0 4px;font-size:22px;\">SkynetJoe Weekly Digest</h1>\n    <p style=\"color:rgba(255,255,255,0.7);margin:0;font-size:13px;\">${date} | AI + Travel + Business</p>\n  </td></tr>\n  <tr><td style=\"background:#0f0f1a;padding:28px 24px;color:#e0e0e0;\">\n    ${newsletter.newsletterHtml || '<p>Newsletter content not available this week.</p>'}\n  </td></tr>\n  <tr><td style=\"background:#0a0a0a;padding:20px 24px;text-align:center;\">\n    <p style=\"color:#666;font-size:12px;margin:0;\">SkynetJoe Weekly Digest | <a href=\"${websiteUrl}\" style=\"color:${brandColor};\">${websiteUrl.replace('https://','')}</a></p>\n  </td></tr>\n</table></body></html>`;\n\nreturn [{ json: {\n  html, subject: 'SkynetJoe Weekly Digest - ' + dateShort,\n  recipientEmail: config.recipientEmail || 'waseemhome8@gmail.com',\n  senderEmail: config.senderEmail || 'waseem@skynetjoe.com'\n}}];\n"
+      },
+      "id": "662cc58f-da8c-492f-930b-6c73c188cbe2",
+      "name": "Build Email - Newsletter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.senderEmail }}",
+        "toEmail": "={{ $json.recipientEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "9737be7d-2944-4975-a204-86bba2322ca1",
+      "name": "Send Email - Newsletter",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1780,
+        2100
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 1 * * 5"
+            }
+          ]
+        }
+      },
+      "id": "c3d8947b-2266-4395-bab6-e0379a07a5c6",
+      "name": "Schedule - Friday 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        2700
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Load pipeline state from workflow static data\nconst staticData = $getWorkflowStaticData('global');\nconst pipeline = staticData.pipeline || {};\nconst required = [\"strategy\", \"clientConfig\", \"research\", \"article\", \"linkedinPost\"];\nconst missing = required.filter(k => !pipeline[k]);\nif (missing.length > 0) {\n  throw new Error('Pipeline state missing: ' + missing.join(', ') + '. Run earlier agent(s) first.');\n}\nreturn [{ json: pipeline }];\n"
+      },
+      "id": "dafa4059-57cc-4f3f-a061-ea679b26b958",
+      "name": "Load State - Friday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        2700
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a video script writer for Waseem Nasir / SkynetJoe. Waseem is currently filming from Bali, Indonesia.",
+              "role": "system"
+            },
+            {
+              "content": "=Create TWO video scripts for Waseem Nasir / SkynetJoe.\n\nThis week's topic: {{ $('Load State - Friday').first().json.strategy.primaryKeyword }}\nArticle: {{ $('Load State - Friday').first().json.article.metadata.title }}\nTravel context: Filming from Bali, Indonesia\n\nSCRIPT 1 -- SHORT-FORM (under 60 seconds):\n- For: Instagram Reel, TikTok, YouTube Shorts\n- Hook in first 3 seconds (pattern interrupt)\n- 1 key insight or stat\n- Visual directions in [brackets] -- include Bali B-roll suggestions (rice terraces, coworking space, beach, villa workspace)\n- CTA: \"Follow for more AI + travel tips\" or \"Link in bio\"\n- Tone: Casual, energetic, \"I'm literally filming this from a Bali cafe\"\n\nSCRIPT 2 -- LONG-FORM (3-5 minutes):\n- For: YouTube\n- Hook (30s): Start with Bali establishing shot + \"I'm running a $X agency from this...\"\n- 3-4 talking points with analysis\n- B-roll suggestions in [brackets]\n- Include at least one \"what I learned from doing this in Bali\" moment\n- Subscribe CTA + website plug\n- Timestamps\n\nOutput both scripts with clear labels and timing cues.\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 2048
+        }
+      },
+      "id": "7613f8ec-b279-4f6f-8ca3-ba1c9392a1fd",
+      "name": "GPT Video Scripts",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        740,
+        2700
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a brand partnership strategist for Waseem Nasir / SkynetJoe. Generate pitch emails for brand collaborations.",
+              "role": "system"
+            },
+            {
+              "content": "=Generate a BRAND COLLABORATION PITCH OF THE WEEK for Waseem Nasir / SkynetJoe.\n\nThis week's content topic: {{ $('Load State - Friday').first().json.strategy.primaryKeyword }}\nBrand collab opportunity: {{ $('Load State - Friday').first().json.strategy.brandCollabOpportunity || 'AI/SaaS tool relevant to this week topic' }}\n\nBased on this week's content, identify the BEST brand to pitch and write:\n\n1. **Target Brand**: Name + why they're a fit\n2. **Pitch Email** (3-4 paragraphs):\n   - Opening: Reference their product + how Waseem uses it\n   - Value prop: Waseem's audience (SMB owners, entrepreneurs), unique angle (AI founder traveling ASEAN)\n   - Collaboration idea: Specific content piece (review, tutorial, \"I used [product] in Bali for 30 days\")\n   - CTA: 15-min call or DM\n3. **Pitch Metrics** to include: follower counts, engagement rates, audience demographics\n\nTarget brand categories to rotate through: VPN (NordVPN/Surfshark), eSIM (Airalo/Holafly), travel insurance (SafetyWing), SaaS (Notion/Canva), luggage (Away/Nomatic), banking (Wise/Revolut), coworking (Hubud/Outpost), hosting (Hostinger), AI tools (n8n/Make)\n\nFormat as clean HTML with copy-ready sections.\n"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1024
+        }
+      },
+      "id": "96f9d3c8-d285-48e6-9f0c-e75ded652d10",
+      "name": "GPT Brand Collab Pitch",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        740,
+        2820
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI API"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "a7b1f999-bf11-4a11-9e32-friday-merge",
+      "name": "Merge Friday Outputs",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        870,
+        2760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Clean video scripts and brand pitch output (inputs merged by position)\nconst items = $input.all();\nfunction extractText(r) {\n  if (!r) return '';\n  if (typeof r === 'string') return r;\n  if (r.text) return r.text;\n  if (r.message?.content) return r.message.content;\n  if (r.output) return typeof r.output === 'string' ? r.output : JSON.stringify(r.output);\n  return JSON.stringify(r);\n}\nlet scripts = extractText(items[0]?.json).replace(/```/g, '');\nlet brandPitch = '';\ntry { brandPitch = extractText(items[1]?.json).replace(/```html\\n?/g, '').replace(/```/g, ''); } catch(e) {}\nreturn [{ json: { videoScripts: scripts, brandPitch } }];\n"
+      },
+      "id": "a8a86423-e0fa-4fb8-8e4a-b61d7abeb67f",
+      "name": "Clean Scripts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        2760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Save this week's content to history for deduplication\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.contentHistory) staticData.contentHistory = [];\n\nconst pipeline = staticData.pipeline || {};\nstaticData.contentHistory.push({\n  timestamp: new Date().toISOString(),\n  week: new Date().toISOString().split('T')[0],\n  primaryKeyword: pipeline.prepKeywords?.primaryKeyword,\n  secondaryKeywords: pipeline.strategy?.secondaryKeywords,\n  articleTitle: pipeline.article?.metadata?.title,\n  articleSlug: pipeline.article?.metadata?.slug,\n  articleAngle: pipeline.strategy?.articleAngle,\n  articleStructure: pipeline.prepKeywords?.articleStructure,\n  topStoryTitle: pipeline.research?.topStory?.title,\n  topStoryUrl: pipeline.research?.topStory?.url,\n  storyUrls: (pipeline.research?.rankedStories || []).map(s => s.url),\n  aeoScore: pipeline.article?.metadata?.aeoScore || pipeline.article?.aeoScore,\n  travelRelevance: pipeline.article?.metadata?.travelRelevance,\n  brandPitched: '',\n  runNumber: pipeline.prepKeywords?.runNumber,\n});\n\n// Keep last 52 entries (1 year)\nif (staticData.contentHistory.length > 52) {\n  staticData.contentHistory = staticData.contentHistory.slice(-52);\n}\n\nreturn [{ json: { status: 'History saved', totalEntries: staticData.contentHistory.length } }];\n"
+      },
+      "id": "a3ad47e5-3fcc-4c7b-9eb4-0dbd259fe23a",
+      "name": "Save Content History",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        2700
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst scripts = $('Clean Scripts').first().json;\nstaticData.pipeline.videoScripts = scripts.videoScripts;\nstaticData.pipeline.brandPitch = scripts.brandPitch;\nstaticData.pipeline.__lastUpdated = new Date().toISOString();\nstaticData.pipeline.__lastStage = 'friday';\nreturn [{ json: { status: 'Friday agent complete' } }];\n"
+      },
+      "id": "f232186c-5890-4ff0-a40c-7a7533a1077a",
+      "name": "Save State - Friday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        2700
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Friday emails: Video Scripts + Weekly Action Steps + Brand Pitch\nconst pipeline = $getWorkflowStaticData('global').pipeline || {};\nconst config = pipeline.clientConfig || {};\nconst brandColor = config.brandColor || '#13b973';\nconst secondaryColor = config.secondaryColor || '#8B5CF6';\nconst websiteUrl = config.websiteUrl || 'https://www.skynetjoe.com';\nconst videoScripts = pipeline.videoScripts || '';\nconst brandPitch = pipeline.brandPitch || '';\nconst article = pipeline.article || {};\nconst meta = article.metadata || {};\nconst date = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\n\n// Email 1: Video Scripts\nconst scriptsHtml = `<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"></head>\n<body style=\"margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;\">\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:680px;margin:0 auto;\">\n  <tr><td style=\"background:linear-gradient(135deg,${secondaryColor},${brandColor});padding:32px 24px;text-align:center;\">\n    <h1 style=\"color:#fff;margin:0 0 4px;font-size:22px;\">SkynetJoe Video Scripts</h1>\n    <p style=\"color:rgba(255,255,255,0.7);margin:0;font-size:13px;\">${date}</p>\n  </td></tr>\n  <tr><td style=\"background:#111;padding:28px 24px;color:#e0e0e0;\">\n    <p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2px;color:${brandColor};margin:0 0 16px;\">VIDEO SCRIPTS</p>\n    <p style=\"color:#aaa;margin:0 0 16px;font-size:13px;\">Short-form (Reel/TikTok/Short) + Long-form (YouTube). Bali B-roll suggestions included.</p>\n    <div style=\"white-space:pre-wrap;font-size:14px;line-height:1.7;color:#ddd;\">${videoScripts}</div>\n  </td></tr>\n  <tr><td style=\"background:#0a0a0a;padding:20px 24px;text-align:center;\">\n    <p style=\"color:#666;font-size:12px;margin:0;\">SkynetJoe AEO Engine v2.0</p>\n  </td></tr>\n</table></body></html>`;\n\n// Email 2: Action Steps + Brand Pitch\nconst actionsHtml = `<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"></head>\n<body style=\"margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;\">\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:680px;margin:0 auto;\">\n  <tr><td style=\"background:linear-gradient(135deg,${secondaryColor},${brandColor});padding:32px 24px;text-align:center;\">\n    <h1 style=\"color:#fff;margin:0 0 4px;font-size:22px;\">Weekly Action Steps</h1>\n    <p style=\"color:rgba(255,255,255,0.7);margin:0;font-size:13px;\">${date} | Your publishing checklist</p>\n  </td></tr>\n  <tr><td style=\"background:#111;padding:28px 24px;color:#e0e0e0;\">\n    <div style=\"background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px;border-left:4px solid ${brandColor};\">\n      <p style=\"color:${brandColor};font-size:12px;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 6px;\">STEP 1</p>\n      <p style=\"color:#fff;font-size:16px;font-weight:700;margin:0 0 8px;\">Record Videos</p>\n      <p style=\"color:#ccc;font-size:14px;margin:0;line-height:1.6;\">Use the video scripts email. Film the short-form reel first (60s). Then the YouTube video (3-5 min). Suggested Bali filming spots: Canggu coworking, rice terrace backdrop, beach sunset.</p>\n    </div>\n    <div style=\"background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px;border-left:4px solid ${brandColor};\">\n      <p style=\"color:${brandColor};font-size:12px;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 6px;\">STEP 2</p>\n      <p style=\"color:#fff;font-size:16px;font-weight:700;margin:0 0 8px;\">Upload Article to CMS</p>\n      <p style=\"color:#ccc;font-size:14px;margin:0;line-height:1.6;\">Open Wednesday's article email. Copy the HTML into your WordPress blog post editor. Add featured image, review, publish.</p>\n    </div>\n    <div style=\"background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px;border-left:4px solid ${brandColor};\">\n      <p style=\"color:${brandColor};font-size:12px;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 6px;\">STEP 3</p>\n      <p style=\"color:#fff;font-size:16px;font-weight:700;margin:0 0 8px;\">Send Newsletter</p>\n      <p style=\"color:#ccc;font-size:14px;margin:0;line-height:1.6;\">Open Thursday's newsletter email. Update the article link with your live URL. Send via your CRM or email tool.</p>\n    </div>\n    <div style=\"background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px;border-left:4px solid ${brandColor};\">\n      <p style=\"color:${brandColor};font-size:12px;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 6px;\">STEP 4</p>\n      <p style=\"color:#fff;font-size:16px;font-weight:700;margin:0 0 8px;\">Post LinkedIn Content</p>\n      <p style=\"color:#ccc;font-size:14px;margin:0;line-height:1.6;\">Copy the LinkedIn post from Wednesday's email. Paste into LinkedIn. Add a relevant image or video. Publish.</p>\n    </div>\n    <div style=\"background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px;border-left:4px solid ${secondaryColor};\">\n      <p style=\"color:${secondaryColor};font-size:12px;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 6px;\">STEP 5</p>\n      <p style=\"color:#fff;font-size:16px;font-weight:700;margin:0 0 8px;\">Send Brand Pitch</p>\n      <p style=\"color:#ccc;font-size:14px;margin:0;line-height:1.6;\">Review the brand collaboration pitch below. Customize the opening line. Send via email or LinkedIn DM.</p>\n    </div>\n\n    ${brandPitch ? `\n    <div style=\"margin-top:24px;\">\n      <p style=\"font-size:11px;text-transform:uppercase;letter-spacing:2px;color:${secondaryColor};margin:0 0 16px;\">BRAND PITCH OF THE WEEK</p>\n      <div style=\"background:#1a1a2e;border-radius:8px;padding:20px;border:1px solid #333;font-size:14px;line-height:1.7;color:#ddd;\">${brandPitch}</div>\n    </div>` : ''}\n  </td></tr>\n  <tr><td style=\"background:#0a0a0a;padding:20px 24px;text-align:center;\">\n    <p style=\"color:#666;font-size:12px;margin:0;\">SkynetJoe AEO Engine v2.0 | <a href=\"${websiteUrl}\" style=\"color:${brandColor};\">${websiteUrl.replace('https://','')}</a></p>\n  </td></tr>\n</table></body></html>`;\n\nreturn [\n  { json: { html: scriptsHtml, subject: 'SkynetJoe Video Scripts - ' + (meta.title || 'This Week'), recipientEmail: config.recipientEmail || 'waseemhome8@gmail.com', senderEmail: config.senderEmail || 'waseem@skynetjoe.com', emailType: 'scripts' } },\n  { json: { html: actionsHtml, subject: 'SkynetJoe Weekly Action Steps + Brand Pitch', recipientEmail: config.recipientEmail || 'waseemhome8@gmail.com', senderEmail: config.senderEmail || 'waseem@skynetjoe.com', emailType: 'actions' } },\n];\n"
+      },
+      "id": "df047383-6cac-4ef7-bff3-5e195aeae86f",
+      "name": "Build Emails - Friday",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        2700
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.senderEmail }}",
+        "toEmail": "={{ $json.recipientEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "67a2d8cf-a1ab-43b1-9fcf-ce1d8e3e9032",
+      "name": "Send Email - Scripts",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2040,
+        2640
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.senderEmail }}",
+        "toEmail": "={{ $json.recipientEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "16154672-20db-4dd4-bc3f-8ebce34e457b",
+      "name": "Send Email - Actions",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2040,
+        2760
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      },
+      "continueOnFail": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {},
+      "id": "9b3791f5-644b-4e8c-9ea6-a362fcf46a0b",
+      "name": "RESET Pipeline - Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        220,
+        3300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Clear pipeline state so agents start fresh\nconst staticData = $getWorkflowStaticData('global');\nstaticData.pipeline = {};\nreturn [{ json: { status: 'Pipeline state cleared', timestamp: new Date().toISOString() } }];\n"
+      },
+      "id": "8029787b-75ae-4dfd-8f03-6d0f7c6e6e23",
+      "name": "RESET Pipeline State",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        3300
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e466d41b-d6e4-4eff-96c8-1b688b39afe8",
+      "name": "RESET History - Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        3300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Clear all content history (keyword rotation, dedup, etc.)\nconst staticData = $getWorkflowStaticData('global');\nstaticData.contentHistory = [];\nreturn [{ json: { status: 'Content history cleared', timestamp: new Date().toISOString() } }];\n"
+      },
+      "id": "e2c13f89-2586-4e25-b499-9ff8c72a90cd",
+      "name": "RESET Content History",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        3300
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule - Monday 9AM": {
+      "main": [
+        [
+          {
+            "node": "Client Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Client Configuration": {
+      "main": [
+        [
+          {
+            "node": "Prepare Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Keywords": {
+      "main": [
+        [
+          {
+            "node": "Autocomplete Keywords",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Autocomplete Questions",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Serper SERP Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Autocomplete Keywords": {
+      "main": [
+        [
+          {
+            "node": "Merge Keyword Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Autocomplete Questions": {
+      "main": [
+        [
+          {
+            "node": "Merge Keyword Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Serper SERP Search": {
+      "main": [
+        [
+          {
+            "node": "Merge Keyword Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Keyword Data": {
+      "main": [
+        [
+          {
+            "node": "GPT Keyword Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Keyword Strategy": {
+      "main": [
+        [
+          {
+            "node": "Parse Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Strategy": {
+      "main": [
+        [
+          {
+            "node": "Save State - Monday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule - Tuesday 9AM": {
+      "main": [
+        [
+          {
+            "node": "Load State - Tuesday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load State - Tuesday": {
+      "main": [
+        [
+          {
+            "node": "RSS Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Sources": {
+      "main": [
+        [
+          {
+            "node": "Split RSS Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split RSS Batches": {
+      "main": [
+        [
+          {
+            "node": "Fetch RSS Feed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to Research Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch RSS Feed": {
+      "main": [
+        [
+          {
+            "node": "Split RSS Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Research Input": {
+      "main": [
+        [
+          {
+            "node": "Gemini Deep Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Deep Research": {
+      "main": [
+        [
+          {
+            "node": "Parse Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Research": {
+      "main": [
+        [
+          {
+            "node": "Save State - Tuesday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule - Wednesday 9AM": {
+      "main": [
+        [
+          {
+            "node": "Load State - Wednesday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load State - Wednesday": {
+      "main": [
+        [
+          {
+            "node": "GPT Write Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Write Article": {
+      "main": [
+        [
+          {
+            "node": "Extract Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Article": {
+      "main": [
+        [
+          {
+            "node": "GPT AEO Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT AEO Editor": {
+      "main": [
+        [
+          {
+            "node": "Finalize Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Article": {
+      "main": [
+        [
+          {
+            "node": "GPT LinkedIn Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT LinkedIn Post": {
+      "main": [
+        [
+          {
+            "node": "Save State - Wednesday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save State - Wednesday": {
+      "main": [
+        [
+          {
+            "node": "Build Email - Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Email - Article": {
+      "main": [
+        [
+          {
+            "node": "Send Email - Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule - Thursday 9AM": {
+      "main": [
+        [
+          {
+            "node": "Load State - Thursday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load State - Thursday": {
+      "main": [
+        [
+          {
+            "node": "GPT Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Clean Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Save State - Thursday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save State - Thursday": {
+      "main": [
+        [
+          {
+            "node": "Build Email - Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Email - Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Send Email - Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule - Friday 9AM": {
+      "main": [
+        [
+          {
+            "node": "Load State - Friday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load State - Friday": {
+      "main": [
+        [
+          {
+            "node": "GPT Video Scripts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GPT Brand Collab Pitch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Video Scripts": {
+      "main": [
+        [
+          {
+            "node": "Merge Friday Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Brand Collab Pitch": {
+      "main": [
+        [
+          {
+            "node": "Merge Friday Outputs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Friday Outputs": {
+      "main": [
+        [
+          {
+            "node": "Clean Scripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Scripts": {
+      "main": [
+        [
+          {
+            "node": "Save Content History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Content History": {
+      "main": [
+        [
+          {
+            "node": "Save State - Friday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save State - Friday": {
+      "main": [
+        [
+          {
+            "node": "Build Emails - Friday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Emails - Friday": {
+      "main": [
+        [
+          {
+            "node": "Send Email - Scripts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email - Actions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RESET Pipeline - Trigger": {
+      "main": [
+        [
+          {
+            "node": "RESET Pipeline State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RESET History - Trigger": {
+      "main": [
+        [
+          {
+            "node": "RESET Content History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a1203153-554d-4166-b213-212f32a2ed70",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9ad0f7b-9a0f-4a98-a384-22570c824dff"
+  },
+  "id": "e57d8617-9a17-4405-90a4-ac53498048db",
+  "tags": []
+}

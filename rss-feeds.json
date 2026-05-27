@@ -1,0 +1,507 @@
+{
+  "metadata": {
+    "description": "RSS Feeds for AEO Content Engine - n8n compatible",
+    "last_verified": "2026-04-04",
+    "total_feeds": 63
+  },
+  "primary_feeds": [
+    {
+      "name": "TechCrunch AI",
+      "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+      "category": "ai_news",
+      "frequency": "5-10/day",
+      "poll_interval_hours": 2
+    },
+    {
+      "name": "VentureBeat",
+      "url": "https://feeds.feedburner.com/venturebeat/SZYF",
+      "category": "ai_news",
+      "frequency": "10-15/day",
+      "poll_interval_hours": 2
+    },
+    {
+      "name": "WIRED AI",
+      "url": "https://www.wired.com/feed/tag/ai/latest/rss",
+      "category": "ai_news",
+      "frequency": "3-5/day",
+      "poll_interval_hours": 2
+    },
+    {
+      "name": "Google News AI Aggregated",
+      "url": "https://news.google.com/rss/search?q=%22AI+agents%22+OR+%22AI+automation%22&hl=en-US&gl=US&ceid=US:en",
+      "category": "ai_news",
+      "frequency": "real-time",
+      "poll_interval_hours": 2
+    },
+    {
+      "name": "Hacker News Front Page",
+      "url": "https://hnrss.org/frontpage",
+      "category": "tech_community",
+      "frequency": "30/day",
+      "poll_interval_hours": 2
+    }
+  ],
+  "ai_deep_dive": [
+    {
+      "name": "The Verge AI",
+      "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+      "category": "ai_news",
+      "frequency": "5-8/day",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "MIT Technology Review AI",
+      "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed",
+      "category": "ai_news",
+      "frequency": "2-4/day",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "OpenAI Blog",
+      "url": "https://openai.com/blog/rss.xml",
+      "category": "ai_company",
+      "frequency": "2-4/week",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "Google AI Blog",
+      "url": "https://blog.google/technology/ai/rss/",
+      "category": "ai_company",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "Simon Willison's Weblog",
+      "url": "https://simonwillison.net/atom/everything/",
+      "category": "ai_commentary",
+      "frequency": "daily",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "MarkTechPost",
+      "url": "https://www.marktechpost.com/feed/",
+      "category": "ai_research",
+      "frequency": "5-10/day",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "n8n Blog",
+      "url": "https://blog.n8n.io/rss/",
+      "category": "automation",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "DeepMind Blog",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "category": "ai_company",
+      "frequency": "1-2/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "HuggingFace Blog",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "category": "ai_company",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "LangChain Blog",
+      "url": "https://blog.langchain.dev/rss/",
+      "category": "ai_company",
+      "frequency": "1-2/week",
+      "poll_interval_hours": 12
+    }
+  ],
+  "marketing_seo": [
+    {
+      "name": "Search Engine Journal",
+      "url": "https://www.searchenginejournal.com/feed/",
+      "category": "seo",
+      "frequency": "10-15/day",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "HubSpot Marketing",
+      "url": "https://blog.hubspot.com/marketing/rss.xml",
+      "category": "marketing",
+      "frequency": "daily",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Social Media Examiner",
+      "url": "https://www.socialmediaexaminer.com/feed/",
+      "category": "social_media",
+      "frequency": "daily",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Google Search Central Blog",
+      "url": "https://developers.google.com/search/blog/feed.xml",
+      "category": "seo",
+      "frequency": "1-2/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Moz Blog",
+      "url": "https://moz.com/blog/feed",
+      "category": "seo",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Ahrefs Blog",
+      "url": "https://ahrefs.com/blog/feed/",
+      "category": "seo",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Semrush Blog",
+      "url": "https://www.semrush.com/blog/feed/",
+      "category": "seo",
+      "frequency": "3-5/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Neil Patel Blog",
+      "url": "https://neilpatel.com/blog/feed/",
+      "category": "marketing",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Google News SEO Updates",
+      "url": "https://news.google.com/rss/search?q=Google+algorithm+update+SEO&hl=en-US&gl=US&ceid=US:en",
+      "category": "seo",
+      "frequency": "real-time",
+      "poll_interval_hours": 6
+    }
+  ],
+  "product_launches": [
+    {
+      "name": "Product Hunt AI",
+      "url": "https://www.producthunt.com/feed?category=ai",
+      "category": "product_launches",
+      "frequency": "daily",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Product Hunt No-Code",
+      "url": "https://www.producthunt.com/feed?category=no-code",
+      "category": "product_launches",
+      "frequency": "daily",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "HN Show",
+      "url": "https://hnrss.org/show",
+      "category": "product_launches",
+      "frequency": "10-20/day",
+      "poll_interval_hours": 6
+    }
+  ],
+  "automation_saas": [
+    {
+      "name": "Zapier Blog",
+      "url": "https://zapier.com/blog/feeds/latest/",
+      "category": "automation",
+      "frequency": "daily",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "SaaStr",
+      "url": "https://www.saastr.com/feed/",
+      "category": "saas",
+      "frequency": "1-2/day",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Indie Hackers",
+      "url": "https://www.indiehackers.com/feed.xml",
+      "category": "startup",
+      "frequency": "5-10/day",
+      "poll_interval_hours": 12
+    }
+  ],
+  "startup_business": [
+    {
+      "name": "TechCrunch Startups",
+      "url": "https://techcrunch.com/category/startups/feed/",
+      "category": "startup",
+      "frequency": "5-10/day",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "Entrepreneur",
+      "url": "https://www.entrepreneur.com/latest.rss",
+      "category": "business",
+      "frequency": "10-15/day",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Y Combinator Blog",
+      "url": "https://www.ycombinator.com/blog/feed/",
+      "category": "startup",
+      "frequency": "1-2/week",
+      "poll_interval_hours": 24
+    },
+    {
+      "name": "Fast Company Technology",
+      "url": "https://www.fastcompany.com/technology/rss",
+      "category": "business",
+      "frequency": "3-5/day",
+      "poll_interval_hours": 12
+    }
+  ],
+  "newsletters": [
+    {
+      "name": "Import AI (Jack Clark)",
+      "url": "https://importai.substack.com/feed",
+      "category": "ai_newsletter",
+      "frequency": "weekly",
+      "poll_interval_hours": 24
+    },
+    {
+      "name": "Towards AI",
+      "url": "https://pub.towardsai.net/feed",
+      "category": "ai_newsletter",
+      "frequency": "3-5/day",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "AI Supremacy",
+      "url": "https://aisupremacy.substack.com/feed",
+      "category": "ai_newsletter",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Stratechery",
+      "url": "https://stratechery.com/feed/",
+      "category": "tech_analysis",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Lenny's Newsletter",
+      "url": "https://www.lennysnewsletter.com/feed",
+      "category": "product_growth",
+      "frequency": "1-2/week",
+      "poll_interval_hours": 24
+    }
+  ],
+  "google_news_custom": [
+    {
+      "name": "GN: AI General",
+      "url": "https://news.google.com/rss/search?q=artificial+intelligence&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 4
+    },
+    {
+      "name": "GN: AI Agents",
+      "url": "https://news.google.com/rss/search?q=%22AI+agents%22&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 4
+    },
+    {
+      "name": "GN: ChatGPT",
+      "url": "https://news.google.com/rss/search?q=ChatGPT&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "GN: LLMs",
+      "url": "https://news.google.com/rss/search?q=large+language+model&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "GN: AI Business Automation",
+      "url": "https://news.google.com/rss/search?q=AI+business+automation&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "GN: No-Code Automation",
+      "url": "https://news.google.com/rss/search?q=no-code+automation&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "GN: Marketing Automation AI",
+      "url": "https://news.google.com/rss/search?q=marketing+automation+AI&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "GN: AI Startup Funding",
+      "url": "https://news.google.com/rss/search?q=AI+startup+funding&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "GN: AEO / Answer Engine Optimization",
+      "url": "https://news.google.com/rss/search?q=%22answer+engine+optimization%22+OR+%22AEO%22+AI&hl=en-US&gl=US&ceid=US:en",
+      "category": "aggregated_news",
+      "poll_interval_hours": 12
+    }
+  ],
+  "hacker_news": [
+    {
+      "name": "HN: Front Page",
+      "url": "https://hnrss.org/frontpage",
+      "category": "tech_community",
+      "poll_interval_hours": 2
+    },
+    {
+      "name": "HN: Best Stories",
+      "url": "https://hnrss.org/best",
+      "category": "tech_community",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "HN: LLM Keyword",
+      "url": "https://hnrss.org/newest?q=LLM",
+      "category": "tech_community",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "HN: AI Agents Keyword",
+      "url": "https://hnrss.org/newest?q=AI+agents",
+      "category": "tech_community",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "HN: Automation Keyword",
+      "url": "https://hnrss.org/newest?q=automation",
+      "category": "tech_community",
+      "poll_interval_hours": 12
+    }
+  ],
+  "reddit_requires_user_agent": [
+    {
+      "name": "r/artificial",
+      "url": "https://www.reddit.com/r/artificial/.rss",
+      "category": "reddit",
+      "note": "Requires User-Agent header in HTTP Request node",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "r/MachineLearning",
+      "url": "https://www.reddit.com/r/MachineLearning/.rss",
+      "category": "reddit",
+      "note": "Requires User-Agent header in HTTP Request node",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "r/ChatGPT",
+      "url": "https://www.reddit.com/r/ChatGPT/.rss",
+      "category": "reddit",
+      "note": "Requires User-Agent header in HTTP Request node",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "r/LocalLLaMA",
+      "url": "https://www.reddit.com/r/LocalLLaMA/.rss",
+      "category": "reddit",
+      "note": "Requires User-Agent header in HTTP Request node",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "r/n8n",
+      "url": "https://www.reddit.com/r/n8n/.rss",
+      "category": "reddit",
+      "note": "Requires User-Agent header in HTTP Request node",
+      "poll_interval_hours": 24
+    },
+    {
+      "name": "r/SaaS",
+      "url": "https://www.reddit.com/r/SaaS/.rss",
+      "category": "reddit",
+      "note": "Requires User-Agent header in HTTP Request node",
+      "poll_interval_hours": 12
+    }
+  ],
+  "web_dev": [
+    {
+      "name": "Smashing Magazine",
+      "url": "https://www.smashingmagazine.com/feed/",
+      "category": "web_dev",
+      "frequency": "3-5/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "CSS-Tricks",
+      "url": "https://css-tricks.com/feed/",
+      "category": "web_dev",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "DEV.to",
+      "url": "https://dev.to/feed",
+      "category": "web_dev",
+      "frequency": "50+/day",
+      "poll_interval_hours": 6
+    },
+    {
+      "name": "Vercel Blog",
+      "url": "https://vercel.com/atom",
+      "category": "web_dev",
+      "frequency": "1-2/week",
+      "poll_interval_hours": 24
+    },
+    {
+      "name": "The New Stack",
+      "url": "https://thenewstack.io/feed/",
+      "category": "web_dev",
+      "frequency": "5-10/day",
+      "poll_interval_hours": 6
+    }
+  ],
+  "social_media_marketing": [
+    {
+      "name": "Social Media Examiner",
+      "url": "https://www.socialmediaexaminer.com/feed/",
+      "category": "social_media",
+      "frequency": "daily",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Hootsuite Blog",
+      "url": "https://blog.hootsuite.com/feed/",
+      "category": "social_media",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Sprout Social Insights",
+      "url": "https://sproutsocial.com/insights/feed/",
+      "category": "social_media",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Buffer Resources",
+      "url": "https://buffer.com/resources/feed/",
+      "category": "social_media",
+      "frequency": "1-2/week",
+      "poll_interval_hours": 24
+    },
+    {
+      "name": "Content Marketing Institute",
+      "url": "https://contentmarketinginstitute.com/feed/",
+      "category": "content_marketing",
+      "frequency": "3-5/week",
+      "poll_interval_hours": 12
+    },
+    {
+      "name": "Copyblogger",
+      "url": "https://copyblogger.com/feed/",
+      "category": "content_marketing",
+      "frequency": "2-3/week",
+      "poll_interval_hours": 24
+    }
+  ]
+}
