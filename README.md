@@ -15,6 +15,10 @@
 
 ---
 
+## Status
+
+Last reviewed: September 2026 · release v2026.09
+
 ## What Is This?
 
 A fully automated n8n workflow that generates **AEO-optimized content** every week — articles, newsletters, and video scripts — using a two-model AI pipeline. Built for agencies and content teams who want to rank in both traditional search AND AI answer engines.
