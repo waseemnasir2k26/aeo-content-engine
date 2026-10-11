@@ -1,0 +1,4 @@
+- October 2026 review of aeo-content-engine, a public repo distributing the AEO Content Engine v7.0 n8n workflow (plus SKYNETJOE-AEO-ENGINE-v1.0) for Answer Engine Optimization content; MIT licensed.
+- Status: unchanged since the April 2026 content commits; the repo is two exportable workflow JSON files, a long README and two strategy documents, not an application.
+- Reviewed this month: README external links checked (all reachable except platform.openai.com, which returns 403 to scripted requests, and three `your-website.com` / `your-logo.com` example placeholders that are intentional). The existing Hire Me section now points at the current Fiverr, Upwork and Calendly links.
+- Known gaps: no automated validation of the workflow JSON; model references (GPT-4.1, Gemini 2.5 Flash) and per-run cost figures date from the original build and are not re-benchmarked. No workflow, prompt or logic changes in this release.
